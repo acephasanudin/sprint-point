@@ -3,13 +3,13 @@ import { z } from "zod";
 import type { AppRouter } from "./server/api/root";
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
-type allTodosOutput = RouterOutput["todo"]["all"];
+type allQuestsOutput = RouterOutput["quest"]["all"];
 
-export type Todo = allTodosOutput[number];
+export type Quest = allQuestsOutput[number];
 
-export const todoInput = z
+export const questInput = z
   .string({
-    required_error: "Describe your todo",
+    required_error: "Input your list id",
   })
   .min(1)
   .max(50);

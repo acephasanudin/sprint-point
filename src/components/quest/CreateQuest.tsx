@@ -1,53 +1,54 @@
+
 import { useState } from "react"
 import toast from "react-hot-toast";
-import { api } from "../utils/api";
-import { todoInput } from "../types";
-import type { Todo } from "../types";
+import { api } from "../../utils/api";
+import { questInput } from "../../types";
+import type { Quest } from "../../types";
 
-export function CreateTodo() {
-	const [newTodo, setNewTodo] = useState("")
+export function CreateQuest() {
+	const [newQuest, setNewQuest] = useState("")
 
 	const trpc = api.useContext();
 
-	const { mutate } = api.todo.create.useMutation({
-		onMutate: async (newTodo) => {
+	const { mutate } = api.quest.create.useMutation({
+		onMutate: async (newQuest) => {
 
 			// Cancel any outgoing refetches so they don't overwrite our optimistic update
-			await trpc.todo.all.cancel()
+			await trpc.quest.all.cancel()
 
 			// Snapshot the previous value
-			const previousTodos = trpc.todo.all.getData()
+			const previousQuests = trpc.quest.all.getData()
 
 			// Optimistically update to the new value
-			trpc.todo.all.setData(undefined, (prev) => {
-				const optimisticTodo: Todo = {
-					id: 'optimistic-todo-id',
-					text: newTodo, // 'placeholder'
+			trpc.quest.all.setData(undefined, (prev) => {
+				const optimisticQuest: Quest = {
+					id: 'optimistic-quest-id',
+					text: newQuest, // 'placeholder'
 					done: false
 				}
-				if (!prev) return [optimisticTodo]
-				return [...prev, optimisticTodo]
+				if (!prev) return [optimisticQuest]
+				return [...prev, optimisticQuest]
 			})
 
 			// Clear input
-			setNewTodo('')
+			setNewQuest('')
 
 			// Return a context object with the snapshotted value
-			return { previousTodos }
+			return { previousQuests }
 		},
 		// If the mutation fails,
 		// use the context returned from onMutate to roll back
-		onError: (err, newTodo, context) => {
-			toast.error("An error occured when creating todo")
+		onError: (err, newQuest, context) => {
+			toast.error("An error occured when creating quest")
 			// Clear input
-			setNewTodo(newTodo)
+			setNewQuest(newQuest)
 			if (!context) return
-			trpc.todo.all.setData(undefined, () => context.previousTodos)
+			trpc.quest.all.setData(undefined, () => context.previousQuests)
 		},
 		// Always refetch after error or success:
 		onSettled: async () => {
 			console.log('SETTLED')
-			await trpc.todo.all.invalidate()
+			await trpc.quest.all.invalidate()
 		},
 	});
 
@@ -55,22 +56,22 @@ export function CreateTodo() {
 		<div>
 			<form onSubmit={(e) => {
 				e.preventDefault()
-				const result = todoInput.safeParse(newTodo)
+				const result = questInput.safeParse(newQuest)
 
 				if (!result.success) {
 					toast.error(result.error.format()._errors.join('\n'))
 					return
 				}
 
-				mutate(newTodo)
+				mutate(newQuest)
 			}} className="flex gap-2">
 				<input
 					className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-					placeholder="New Todo..."
-					type="text" name="new-todo" id="new-todo"
-					value={newTodo}
+					placeholder="New Quest..."
+					type="text" name="new-quest" id="new-quest"
+					value={newQuest}
 					onChange={(e) => {
-						setNewTodo(e.target.value)
+						setNewQuest(e.target.value)
 					}}
 				/>
 				<button
