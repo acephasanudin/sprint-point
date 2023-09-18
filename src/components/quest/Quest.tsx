@@ -13,7 +13,7 @@ export function Quest({ quest }: QuestProps) {
 	const trpc = api.useContext();
 
 	const { mutate: doneMutation } = api.quest.toggle.useMutation({
-		onMutate: async ({ id, done }) => {
+		onMutate: async ({ id, status }) => {
 
 			// Cancel any outgoing refetches so they don't overwrite our optimistic update
 			await trpc.quest.all.cancel()
@@ -28,7 +28,7 @@ export function Quest({ quest }: QuestProps) {
 					if (t.id === id) {
 						return ({
 							...t,
-							done
+							status
 						})
 					}
 					return t
@@ -39,16 +39,16 @@ export function Quest({ quest }: QuestProps) {
 			return { previousQuests }
 		},
 
-		onSuccess: (err, { done }) => {
-			if (done) {
+		onSuccess: (err, { status }) => {
+			if (status) {
 				toast.success("Quest completed 🎉")
 			}
 		},
 
 		// If the mutation fails,
 		// use the context returned from onMutate to roll back
-		onError: (err, done, context) => {
-			toast.error(`An error occured when marking quest as ${done ? "done" : "undone"}`)
+		onError: (err, status, context) => {
+			toast.error(`An error occured when marking quest as ${status ? "done" : "undone"}`)
 			if (!context) return
 			trpc.quest.all.setData(undefined, () => context.previousQuests)
 		},
