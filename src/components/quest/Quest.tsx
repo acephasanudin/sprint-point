@@ -24,7 +24,7 @@ export function Quest({ quest }: QuestProps) {
 			// Optimistically update to the new value
 			trpc.quest.all.setData(undefined, (prev: any) => {
 				if (!prev) return previousQuests
-				return prev.map(t => {
+				return prev.map((t: any) => {
 					if (t.id === id) {
 						return ({
 							...t,
