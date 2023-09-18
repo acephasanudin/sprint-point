@@ -68,9 +68,9 @@ export function Quest({ quest }: QuestProps) {
 			const previousQuests = trpc.quest.all.getData()
 
 			// Optimistically update to the new value
-			trpc.quest.all.setData(undefined, (prev) => {
+			trpc.quest.all.setData(undefined, (prev: any) => {
 				if (!prev) return previousQuests
-				return prev.filter(t => t.id !== deleteId)
+				return prev.filter((t: any) => t.id !== deleteId)
 			})
 
 			// Return a context object with the snapshotted value
