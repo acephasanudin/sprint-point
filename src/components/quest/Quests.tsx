@@ -22,7 +22,7 @@ export function Quests() {
             </thead>
             <tbody>
 			{quests.length ?
-				quests.map((quest) => {
+				quests.map((quest: any) => {
 					return <Quest key={quest.id} quest={quest} />
 				})
 				: "Create your first quest..."}
