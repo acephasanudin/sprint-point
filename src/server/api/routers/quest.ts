@@ -44,7 +44,7 @@ export const questRouter = createTRPCRouter({
     .input(
         z.object({
             id: z.string(),
-            completed: z.boolean(),
+            status: z.string(),
         })
     )
     .mutation(({ ctx, input }) => {
@@ -54,7 +54,7 @@ export const questRouter = createTRPCRouter({
                 id,
             },
             data: {
-                completed,
+                status,
             },
         });
     }),
