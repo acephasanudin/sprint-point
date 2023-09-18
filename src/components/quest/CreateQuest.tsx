@@ -20,7 +20,7 @@ export function CreateQuest() {
 			const previousQuests = trpc.quest.all.getData()
 
 			// Optimistically update to the new value
-			trpc.quest.all.setData(undefined, (prev) => {
+			trpc.quest.all.setData(undefined, (prev: any) => {
 				const optimisticQuest: Quest = {
 					id: 'optimistic-quest-id',
 					text: newQuest, // 'placeholder'
