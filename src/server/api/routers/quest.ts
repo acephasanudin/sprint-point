@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { questInput } from "../../../types";
 import axios, { AxiosRequestConfig } from 'axios';
-
+let listId = '';
 export const questRouter = createTRPCRouter({
     all: protectedProcedure.query(async ({ ctx }) => {
         const apiToken = process.env.CLICKUP_API_TOKEN;
@@ -15,23 +15,23 @@ export const questRouter = createTRPCRouter({
             },
         };
         // get list tasks by list id
-        const listId = '900303003447';
         const listTasks = await axios.get(baseUrl + 'list/' + listId + '/task', headers);
         const tasks = listTasks.data.tasks;
-        const quests = tasks.map(({ id, name, status }) => ({ id, name, completed: status.status === 'closed' }));
+        const quests = tasks.map(({ id, name, status }) => ({ id, name, status: status.status }));
         return quests;
 
         // const quests = await ctx.prisma.quest.findMany({});
         // return quests.map(({ id, name, completed }) => ({ id, name, completed }));
     }),
     create: protectedProcedure.input(questInput).mutation(({ ctx, input }) => {
-        return ctx.prisma.quest.create({
-            data: {
-                id: input,
-                name: input,
-                description: input,
-            },
-        });
+        listId = input;
+        // return ctx.prisma.quest.create({
+        //     data: {
+        //         id: input,
+        //         name: input,
+        //         description: input,
+        //     },
+        // });
     }),
     delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
         return ctx.prisma.quest.delete({

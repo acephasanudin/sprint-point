@@ -8,7 +8,7 @@ type QuestProps = {
 }
 
 export function Quest({ quest }: QuestProps) {
-	const { id, name, done } = quest
+	const { id, name, status } = quest
 
 	const trpc = api.useContext();
 
@@ -97,13 +97,54 @@ export function Quest({ quest }: QuestProps) {
             <td>
                 {name}
             </td>
+            <td >  
+                <div className="flex gap-2 items-center justify-between">
+                    <select className="w-14 border border-gray-300 rounded bg-black/80 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800">
+                        <option value="0">0</option>
+                        <option value="0.25">0.25</option>
+                        <option value="0.5">0.5</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="5">5</option>
+                        <option value="8">8</option>
+                    </select>
+                </div>
+            </td>
+            <td className="items-center">
+                <select className="w-14 border border-gray-300 rounded bg-black/80 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800">
+                    <option value="0">0</option>
+                    <option value="0.25">0.25</option>
+                    <option value="0.5">0.5</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="8">8</option>
+                </select>
+            </td>
+            <td className="flex gap-2 items-center justify-between">
+                <select className="w-14 border border-gray-300 rounded bg-black/80 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800">
+                    <option value="0">0</option>
+                    <option value="0.25">0.25</option>
+                    <option value="0.5">0.5</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="8">8</option>
+                </select>
+            </td>
             <td>
-                <input className="cursor-pointer w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800" type="checkbox" name="done" id={id} checked={done} onChange={(e) => {
-                    doneMutation({ id, done: e.target.checked });
-                }} />
+                {status}
             </td>
         </tr>
-		// <div
+        // <td>
+        //     <input className="cursor-pointer w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800" type="checkbox" name="done" id={id} checked={done} onChange={(e) => {
+        //         doneMutation({ id, done: e.target.checked });
+        //     }} />
+        // </td>
+        // <div
 		// 	className="flex gap-2 items-center justify-between"
 		// >
 		// 	<div className="flex gap-2 items-center">

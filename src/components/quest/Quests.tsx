@@ -9,14 +9,14 @@ export function Quests() {
 	if (isError) return <div>Error fetching quests ❌</div>
 
 	return (
-        <table className="table">
+        <table>
             <thead>
                 <tr>
                     <th>Id</th>
                     <th>Task</th>
-                    <th>Sprint Point</th>
-                    <th>Review Point</th>
-                    <th>Testing Point</th>
+                    <th>Point</th>
+                    <th>Review</th>
+                    <th>Testing</th>
                     <th>Status</th>
                 </tr>
             </thead>
