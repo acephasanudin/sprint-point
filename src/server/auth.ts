@@ -4,7 +4,7 @@ import {
     type NextAuthOptions,
     type DefaultSession,
 } from "next-auth";
-import EmailProvider from "next-auth/providers/email";
+// import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "./db";

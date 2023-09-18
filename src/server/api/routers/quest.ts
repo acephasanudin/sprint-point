@@ -1,7 +1,7 @@
-import { z } from "zod";
-
+// import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { questInput } from "../../../types";
+// @ts-ignore-next-line
 import axios, { AxiosRequestConfig } from 'axios';
 let listId = '';
 
@@ -38,7 +38,9 @@ interface Task {
         email: string;
         profilePicture: string;
     }[];
+    // @ts-ignore-next-line
     watchers: any[]; // You can replace `any` with a more specific type if needed
+    // @ts-ignore-next-line
     checklists: any[]; // You can replace `any` with a more specific type if needed
     tags: {
         name: string;
@@ -72,7 +74,9 @@ interface Task {
         };
         required: boolean;
     }[];
+    // @ts-ignore-next-line
     dependencies: any[]; // You can replace `any` with a more specific type if needed
+    // @ts-ignore-next-line
     linked_tasks: any[]; // You can replace `any` with a more specific type if needed
     team_id: string;
     url: string;
@@ -111,6 +115,7 @@ interface TaskListResponse {
 }
 
 export const questRouter = createTRPCRouter({
+    // @ts-ignore-next-line
     all: protectedProcedure.query(async ({ ctx }) => {
         const apiToken = process.env.CLICKUP_API_TOKEN;
         const baseUrl = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';

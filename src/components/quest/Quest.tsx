@@ -1,7 +1,6 @@
-
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import type { Quest } from "../../types";
-import { api } from "../../utils/api";
+// import { api } from "../../utils/api";
 
 type QuestProps = {
 	quest: Quest

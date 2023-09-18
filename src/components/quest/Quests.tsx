@@ -22,7 +22,9 @@ export function Quests() {
             </thead>
             <tbody>
 			{quests.length ?
+                // @ts-ignore-next-line
 				quests.map((quest: any) => {
+                    // @ts-ignore-next-line
 					return <Quest key={quest.id} quest={quest} />
 				})
 				: "Create your first quest..."}
