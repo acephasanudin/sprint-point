@@ -10,84 +10,84 @@ type QuestProps = {
 export function Quest({ quest }: QuestProps) {
 	const { id, name, status } = quest
 
-	const trpc = api.useContext();
+	// const trpc = api.useContext();
 
-	const { mutate: doneMutation } = api.quest.toggle.useMutation({
-		onMutate: async ({ id, status }) => {
+	// const { mutate: doneMutation } = api.quest.toggle.useMutation({
+	// 	onMutate: async ({ id, status }) => {
 
-			// Cancel any outgoing refetches so they don't overwrite our optimistic update
-			await trpc.quest.all.cancel()
+	// 		// Cancel any outgoing refetches so they don't overwrite our optimistic update
+	// 		await trpc.quest.all.cancel()
 
-			// Snapshot the previous value
-			const previousQuests = trpc.quest.all.getData()
+	// 		// Snapshot the previous value
+	// 		const previousQuests = trpc.quest.all.getData()
 
-			// Optimistically update to the new value
-			trpc.quest.all.setData(undefined, (prev: any) => {
-				if (!prev) return previousQuests
-				return prev.map((t: any) => {
-					if (t.id === id) {
-						return ({
-							...t,
-							status
-						})
-					}
-					return t
-				})
-			})
+	// 		// Optimistically update to the new value
+	// 		trpc.quest.all.setData(undefined, (prev: any) => {
+	// 			if (!prev) return previousQuests
+	// 			return prev.map((t: any) => {
+	// 				if (t.id === id) {
+	// 					return ({
+	// 						...t,
+	// 						status
+	// 					})
+	// 				}
+	// 				return t
+	// 			})
+	// 		})
 
-			// Return a context object with the snapshotted value
-			return { previousQuests }
-		},
+	// 		// Return a context object with the snapshotted value
+	// 		return { previousQuests }
+	// 	},
 
-		onSuccess: (err, { status }) => {
-			if (status) {
-				toast.success("Quest completed 🎉")
-			}
-		},
+	// 	onSuccess: (err, { status }) => {
+	// 		if (status) {
+	// 			toast.success("Quest completed 🎉")
+	// 		}
+	// 	},
 
-		// If the mutation fails,
-		// use the context returned from onMutate to roll back
-		onError: (err, status, context) => {
-			toast.error(`An error occured when marking quest as ${status ? "done" : "undone"}`)
-			if (!context) return
-			trpc.quest.all.setData(undefined, () => context.previousQuests)
-		},
-		// Always refetch after error or success:
-		onSettled: async () => {
-			await trpc.quest.all.invalidate()
-		},
-	});
+	// 	// If the mutation fails,
+	// 	// use the context returned from onMutate to roll back
+	// 	onError: (err, status, context) => {
+	// 		toast.error(`An error occured when marking quest as ${status ? "done" : "undone"}`)
+	// 		if (!context) return
+	// 		trpc.quest.all.setData(undefined, () => context.previousQuests)
+	// 	},
+	// 	// Always refetch after error or success:
+	// 	onSettled: async () => {
+	// 		await trpc.quest.all.invalidate()
+	// 	},
+	// });
 
-	const { mutate: deleteMutation } = api.quest.delete.useMutation({
-		onMutate: async (deleteId) => {
+	// const { mutate: deleteMutation } = api.quest.delete.useMutation({
+	// 	onMutate: async (deleteId) => {
 
-			// Cancel any outgoing refetches so they don't overwrite our optimistic update
-			await trpc.quest.all.cancel()
+	// 		// Cancel any outgoing refetches so they don't overwrite our optimistic update
+	// 		await trpc.quest.all.cancel()
 
-			// Snapshot the previous value
-			const previousQuests = trpc.quest.all.getData()
+	// 		// Snapshot the previous value
+	// 		const previousQuests = trpc.quest.all.getData()
 
-			// Optimistically update to the new value
-			trpc.quest.all.setData(undefined, (prev: any) => {
-				if (!prev) return previousQuests
-				return prev.filter((t: any) => t.id !== deleteId)
-			})
+	// 		// Optimistically update to the new value
+	// 		trpc.quest.all.setData(undefined, (prev: any) => {
+	// 			if (!prev) return previousQuests
+	// 			return prev.filter((t: any) => t.id !== deleteId)
+	// 		})
 
-			// Return a context object with the snapshotted value
-			return { previousQuests }
-		},
-		// If the mutation fails,
-		// use the context returned from onMutate to roll back
-		onError: (err, newQuest, context) => {
-			toast.error(`An error occured when deleting quest`)
-			if (!context) return
-			trpc.quest.all.setData(undefined, () => context.previousQuests)
-		},
-		// Always refetch after error or success:
-		onSettled: async () => {
-			await trpc.quest.all.invalidate()
-		},
-	});
+	// 		// Return a context object with the snapshotted value
+	// 		return { previousQuests }
+	// 	},
+	// 	// If the mutation fails,
+	// 	// use the context returned from onMutate to roll back
+	// 	onError: (err, newQuest, context) => {
+	// 		toast.error(`An error occured when deleting quest`)
+	// 		if (!context) return
+	// 		trpc.quest.all.setData(undefined, () => context.previousQuests)
+	// 	},
+	// 	// Always refetch after error or success:
+	// 	onSettled: async () => {
+	// 		await trpc.quest.all.invalidate()
+	// 	},
+	// });
 
 	return (
         <tr>
