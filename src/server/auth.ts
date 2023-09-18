@@ -25,10 +25,9 @@ declare module "next-auth" {
 }
 export const authOptions: NextAuthOptions = {
     callbacks: {
-        async signIn({ account, profile }) {
-            console.log("signIn", account, profile);
-            if (account.provider === "google") {
-                return profile.email_verified && profile.email.endsWith("@genflix.co.id")
+        signIn({ account, profile }): boolean {
+            if (account?.provider === "google") {
+                return profile?.email?.endsWith("@genflix.co.id") || false;
             }
             return true
         },
@@ -36,8 +35,8 @@ export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [
         GoogleProvider({
-            clientId: process.env.GOOGLE_ID,
-            clientSecret: process.env.GOOGLE_SECRET
+            clientId: process.env.GOOGLE_ID || '',
+            clientSecret: process.env.GOOGLE_SECRET || '',
         }),
     ],
 };
