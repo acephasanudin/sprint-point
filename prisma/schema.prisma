@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
     relationMode = "prisma"
 }
 
@@ -19,7 +19,7 @@ model Account {
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? // @db.LongText
+    id_token          String? // @db.Text
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -42,8 +42,6 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    todo          Todo[]
-    quest         Quest[]
 }
 
 model VerificationToken {
@@ -54,23 +52,20 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-model Todo {
-    id        String   @id @default(cuid())
-    text      String
-    done      Boolean  @default(false)
-    user      User?    @relation(fields: [userId], references: [id])
-    userId    String?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
 model Quest {
-    id              String   @id
-    name            String?
-    description     String?
-    completed       Boolean  @default(false)
-    userId          String?
-    user            User?    @relation(fields: [userId], references: [id])
-    createdAt       DateTime @default(now())
-    updatedAt       DateTime @updatedAt
+    id          String   @id
+    name        String?
+    description String?
+    status      String?
+    assignees   String?
+    tags        String?
+    teamId      String?
+    url         String?
+    listId      String?
+    projectId   String?
+    points      Float?
+    review      Float?
+    testing     Float?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 }
