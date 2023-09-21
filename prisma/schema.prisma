@@ -14,12 +14,12 @@ model Account {
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String?  @db.Text
-    access_token      String?  @db.Text
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String?  @db.Text
+    id_token          String? @db.Text
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -55,7 +55,7 @@ model VerificationToken {
 model Quest {
     id          String   @id
     name        String?
-    description String?
+    description String?  @db.Text
     status      String?
     assignees   String?
     tags        String?
@@ -63,7 +63,7 @@ model Quest {
     url         String?
     listId      String?
     projectId   String?
-    points      Float?
+    point       Float?
     review      Float?
     testing     Float?
     createdAt   DateTime @default(now())

@@ -10,6 +10,4 @@ export type Quest = allQuestsOutput[number];
 export const questInput = z
   .string({
     required_error: "Input your list id",
-  })
-  .min(1)
-  .max(50);
+  });

@@ -22,9 +22,12 @@ export function CreateQuest() {
             // @ts-ignore-next-line
 			trpc.quest.all.setData(undefined, (prev: any) => {
 				const optimisticQuest: Quest = {
-					id: 'optimistic-quest-id',
-					name: newQuest, // 'placeholder'
-					status: 'active',
+					id: '',
+					name: '', // 'placeholder'
+                    point: null,
+                    review: null,
+                    testing: null,
+					status: '',
 				}
 				if (!prev) return [optimisticQuest]
                 // @ts-ignore-next-line

@@ -1,4 +1,4 @@
-// import { z } from "zod";
+import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { questInput } from "../../../types";
 // @ts-ignore-next-line
@@ -114,34 +114,81 @@ interface TaskListResponse {
     tasks: Task[];
 }
 
+type questData = {
+    id: string;
+    point?: number;
+    review?: number;
+    testing?: number;
+};
+
 export const questRouter = createTRPCRouter({
     // @ts-ignore-next-line
-    all: protectedProcedure.query(async ({ ctx }) => {
-        const apiToken = process.env.CLICKUP_API_TOKEN;
-        const baseUrl = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
-        const headers: AxiosRequestConfig = {
-            headers: {
-                'Authorization': apiToken,
-                'Content-Type': 'application/json',
-            },
-        };
-        // get list tasks by list id
-        // const listTasks = await axios.get(baseUrl + 'list/' + listId + '/task', headers);
-        // const tasks = listTasks.data.tasks;
-        // const quests = tasks.map(({ id, name, status }) => ({ id, name, status: status.status }));
-        // return quests;
+    all: protectedProcedure.query(async ({ ctx, input }) => {
+        if (listId !== '') {
+            const apiToken = process.env.CLICKUP_API_TOKEN;
+            const baseUrl = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
+            const headers: AxiosRequestConfig = {
+                headers: {
+                    'Authorization': apiToken,
+                    'Content-Type': 'application/json',
+                },
+            };
+            const listTasks = await axios.get<TaskListResponse>(`${baseUrl}list/${listId}/task`, headers);
+            const tasks: Task[] = listTasks.data.tasks;
+            tasks.forEach(async (task) => {
+                const { id, name, description, status, assignees, tags, team_id, url, list, project } = task;
+                await ctx.prisma.quest.upsert({
+                    where: {
+                        id,
+                    },
+                    update: {
+                        name,
+                        description,
+                        status: status.status,
+                        assignees: assignees.map(({ username }) => username).join(', '),
+                        tags: tags.map(({ name }) => name).join(', '),
+                        teamId: team_id,
+                        url,
+                        listId: list.id,
+                        projectId: project.id
+                    },
+                    create: {
+                        id,
+                        name,
+                        description,
+                        status: status.status,
+                        assignees: assignees.map(({ username }) => username).join(', '),
+                        tags: tags.map(({ name }) => name).join(', '),
+                        teamId: team_id,
+                        url,
+                        listId: list.id,
+                        projectId: project.id
+                    },
+                });
+            });
 
-        const listTasks = await axios.get<TaskListResponse>(`${baseUrl}list/${listId}/task`, headers);
-        const tasks: Task[] = listTasks.data.tasks;
-        const quests = tasks.map(({ id, name, status }) => ({
-            id,
-            name,
-            status: status.status
-        }));
-        return quests;
+            const listQuests = await ctx.prisma.quest.findMany({
+                where: {
+                    id: {
+                        in: tasks.map(({ id }) => id),
+                    },
+                },
+            });
 
-        // const quests = await ctx.prisma.quest.findMany({});
-        // return quests.map(({ id, name, completed }) => ({ id, name, completed }));
+            const quests = listQuests.map(({ id, name, point, review, testing, status }) => ({
+                id,
+                name,
+                point,
+                review,
+                testing,
+                status
+            }));
+            return quests;
+        }
+
+        const listQuests = await ctx.prisma.quest.findMany({});
+        return listQuests.map(({ id, name, point, review, testing, status }) => ({ id, name, point, review, testing, status }));
+
     }),
     create: protectedProcedure.input(questInput).mutation(({ input }) => {
         listId = input;
@@ -152,6 +199,25 @@ export const questRouter = createTRPCRouter({
         //         description: input,
         //     },
         // });
+    }),
+    // input object
+    update: protectedProcedure.input(z.object({
+        id: z.string(),
+        point: z.optional(z.number()),
+        review: z.optional(z.number()),
+        testing: z.optional(z.number()),
+    })).mutation(({ ctx, input }) => {
+        const { id, point, review, testing } = input;
+        return ctx.prisma.quest.update({
+            where: {
+                id,
+            },
+            data: {
+                point,
+                review,
+                testing,
+            },
+        });
     }),
     // delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
     //     return ctx.prisma.quest.delete({
