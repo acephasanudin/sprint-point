@@ -26,6 +26,7 @@ export function GetTasks() {
                     point: null,
                     review: null,
                     testing: null,
+                    sprint: '',
                     status: '',
                 }
                 if (!prev) return [optimisticTask]
