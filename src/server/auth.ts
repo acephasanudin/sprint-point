@@ -13,15 +13,8 @@ declare module "next-auth" {
     interface Session extends DefaultSession {
         user: {
             id: string;
-            // ...other properties
-            // role: UserRole;
         } & DefaultSession["user"];
     }
-
-    // interface User {
-    //   // ...other properties
-    //   // role: UserRole;
-    // }
 }
 export const authOptions: NextAuthOptions = {
     callbacks: {
@@ -39,6 +32,10 @@ export const authOptions: NextAuthOptions = {
             clientSecret: process.env.GOOGLE_SECRET || '',
         }),
     ],
+    pages: {
+        signIn: "/auth/signin",
+        error: "/",
+    },
 };
 
 export const getServerAuthSession = (ctx: {
