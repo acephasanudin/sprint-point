@@ -1,9 +1,9 @@
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Tasks } from "../components/Tasks/Tasks";
+import { Tasks } from "../../components/Tasks/Tasks";
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "../server/auth";
-import Admin from "../layouts/Admin";
+import { authOptions } from "../../server/auth";
+import Admin from "../../layouts/Admin";
 
 export default function Dashboard({ }: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const { data: sessionData } = useSession();

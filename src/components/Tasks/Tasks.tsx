@@ -1,7 +1,7 @@
 
 import { api } from "../../utils/api";
 import { Task } from "./Task";
-import { GetTasks } from "./GetTasks";
+import { SearchTasks } from "./SearchTasks";
 
 
 export function Tasks() {
@@ -13,7 +13,6 @@ export function Tasks() {
 
     return (
         <>
-        <GetTasks />
             <div className="flex flex-wrap mt-4">
                 <div className="w-full mb-12 px-4">
                     <div
@@ -26,11 +25,12 @@ export function Tasks() {
                                 <div className="relative w-full px-4 max-w-full flex-grow flex-1">
                                     <h3
                                         className={
-                                            "font-semibold text-lg text-white"
+                                            "font-semibold text-lg text-white float-left"
                                         }
                                     >
                                         Clickup Tasks {`- ${sprint}`}
                                     </h3>
+                                    <SearchTasks />
                                 </div>
                             </div>
                         </div>

@@ -4,7 +4,7 @@ import { api } from "../../utils/api";
 import { TaskInput } from "../../types";
 import type { Task } from "../../types";
 
-export function GetTasks() {
+export function SearchTasks() {
     const [newTask, setNewTask] = useState("")
 
     const trpc = api.useContext();
@@ -57,7 +57,7 @@ export function GetTasks() {
     });
 
     return (
-        <div>
+        <div className="float-right">
             <form onSubmit={(e) => {
                 e.preventDefault()
                 const result = TaskInput.safeParse(newTask)
@@ -79,9 +79,9 @@ export function GetTasks() {
                     }}
                 />
                 <button
-                    className="bg-blueGrey hover:bg-blue-800 focus:ring-4  focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:focus:ring-blue-800"
+                    className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white border border-blue-500 w-full sm:w-auto px-5 py-2.5 text-center hover:border-transparent rounded ml-3"
                 >
-                    Find Task
+                    Find Tasks
                 </button>
             </form>
         </div>
