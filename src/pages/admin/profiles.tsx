@@ -8,7 +8,7 @@ import Profiles from "../../components/Profiles/Profiles";
 
 import Admin from "../../layouts/Admin";
 
-export default function Tables() {
+export default function ProfilesPage() {
   return (
     <Admin>
       <div className="flex flex-wrap mt-4">
@@ -20,4 +20,4 @@ export default function Tables() {
   );
 }
 
-Tables.layout = Admin;
+ProfilesPage.layout = Admin;

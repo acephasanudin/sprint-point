@@ -4,7 +4,7 @@ import { api } from "../../utils/api";
 import { TaskInput } from "../../types";
 import type { Task } from "../../types";
 
-export function SearchTasks() {
+export function SearchPoint() {
     const [newTask, setNewTask] = useState("")
 
     const trpc = api.useContext();
