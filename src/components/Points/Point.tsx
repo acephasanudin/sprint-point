@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import type { Task, TaskProps, TaskData } from "../../types";
 import { api } from "../../utils/api";
 
-export function Task({ task }: TaskProps) {
+export function Point({ task }: TaskProps) {
     const { id, name, point, review, testing, status } = task
 
     const trpc = api.useContext();

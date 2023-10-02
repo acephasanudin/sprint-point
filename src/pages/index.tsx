@@ -1,14 +1,7 @@
-// import Head from "next/head";
-import { signIn, signOut, useSession } from "next-auth/react";
-// import { Quests } from "../components/quest/Quests";
-// import { FilterQuest } from "../components/quest/FilterQuest";
-// import { CreateQuest } from "../components/quest/CreateQuest";
-import Link from "next/link";
 import { Navbar } from "../components/Navbars/Navbar";
 import { Footer } from "../components/Footers/Footer";
 
 function Home() {
-    const { data: sessionData } = useSession();
     return (
         <>
             <Navbar />

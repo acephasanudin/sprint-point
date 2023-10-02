@@ -1,13 +1,14 @@
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Tasks } from "../components/Tasks/Tasks";
+import { Tasks } from "../../components/Tasks/Tasks";
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "../server/auth";
+import { authOptions } from "../../server/auth";
+import Admin from "../../layouts/Admin";
 
-function Dashboard({ }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Dashboard({ }: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const { data: sessionData } = useSession();
     return (
-        <>
+        <Admin>
             <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0f1235] to-[#090920]">
                 <div className="container flex flex-col items-center justify-center gap-4 px-4 py-4">
                     {sessionData && (
@@ -28,11 +29,9 @@ function Dashboard({ }: InferGetServerSidePropsType<typeof getServerSideProps>) 
                     </div>
                 </div>
             </main>
-        </>
+        </Admin>
     );
 }
-
-export default Dashboard;
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     const session = await getServerSession(ctx.req, ctx.res, authOptions);
