@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
-import Chart from "chart.js/auto"; // Use "chart.js/auto" to automatically include necessary components
+import Chart from "chart.js/auto";
 
 export default function CardBarChart() {
     const chartRef = useRef(null);
     useEffect(() => {
-        let config: Chart.ChartConfiguration = {
+        let config = {
             type: "bar",
             data: {
                 labels: [

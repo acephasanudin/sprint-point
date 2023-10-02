@@ -4,7 +4,7 @@ import Chart from "chart.js/auto";
 export default function CardLineChart() {
     const chartRef = useRef(null);
     useEffect(() => {
-        var config: Chart.ChartConfiguration = {
+        var config = {
             type: "line",
             data: {
                 labels: [
