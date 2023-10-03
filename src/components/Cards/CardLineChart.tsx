@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Chart, { ChartConfiguration } from "chart.js/auto";
 
 export default function CardLineChart() {
@@ -63,21 +63,6 @@ export default function CardLineChart() {
                     },
                 },
             },
-        };
-        let chartLineInstance = null as Chart | null;
-        let ctx = document.getElementById("bar-chart") as HTMLCanvasElement | null;
-        if (ctx) {
-            if (chartLineInstance) {
-                chartLineInstance.destroy();
-            }
-
-            chartLineInstance = new Chart(ctx, config);
-        }
-
-        return () => {
-            if (chartLineInstance) {
-                chartLineInstance.destroy();
-            }
         };
     }, []);
 
