@@ -4,11 +4,12 @@ import { Point } from "./Point";
 import { SearchPoint } from "./SearchPoint";
 import { api } from "../../utils/api";
 
-// components
-
-export default function Points({ color }) {
+type PointsProps = {
+    color?: "light" | "dark";
+};
+export default function Points({ color }: PointsProps) {
     const { data: tasks, isLoading, isError } = api.task.all.useQuery();
-    const sprint = tasks?.length ? tasks[0]?.sprint : 0;
+    // const sprint = tasks?.length ? tasks[0]?.sprint : 0;
 
     if (isLoading) return <div>Loading tasks 🔄</div>
     if (isError) return <div>Error fetching tasks ❌</div>

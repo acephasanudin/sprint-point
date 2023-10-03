@@ -1,10 +1,9 @@
-import React, { useEffect, useRef } from "react";
-import Chart from "chart.js/auto";
+import React, { useEffect } from "react";
+import Chart, { ChartConfiguration } from "chart.js/auto";
 
 export default function CardBarChart() {
-    const chartRef = useRef(null);
     useEffect(() => {
-        let config = {
+        let config: ChartConfiguration = {
             type: "bar",
             data: {
                 labels: [
@@ -47,14 +46,7 @@ export default function CardBarChart() {
                         mode: "index",
                         intersect: false,
                     },
-                    hover: {
-                        mode: "nearest",
-                        intersect: true,
-                    },
                     legend: {
-                        labels: {
-                            fontColor: "rgba(0,0,0,.4)",
-                        },
                         align: "end",
                         position: "bottom",
                     },
@@ -67,12 +59,7 @@ export default function CardBarChart() {
                             text: "Month",
                         },
                         grid: {
-                            borderDash: [2],
-                            borderDashOffset: [2],
                             color: "rgba(33, 37, 41, 0.3)",
-                            zeroLineColor: "rgba(33, 37, 41, 0.3)",
-                            zeroLineBorderDash: [2],
-                            zeroLineBorderDashOffset: [2],
                         },
                     },
                     y: {
@@ -82,30 +69,25 @@ export default function CardBarChart() {
                             text: "Value",
                         },
                         grid: {
-                            borderDash: [2],
-                            drawBorder: false,
-                            borderDashOffset: [2],
                             color: "rgba(33, 37, 41, 0.2)",
-                            zeroLineColor: "rgba(33, 37, 41, 0.15)",
-                            zeroLineBorderDash: [2],
-                            zeroLineBorderDashOffset: [2],
                         },
                     },
                 },
             },
         };
+        let chartBarInstance = null as Chart | null;
         let ctx = document.getElementById("bar-chart") as HTMLCanvasElement | null;
         if (ctx) {
-            if (chartRef.current) {
-                chartRef.current.destroy();
+            if (chartBarInstance) {
+                chartBarInstance.destroy();
             }
 
-            chartRef.current = new Chart(ctx, config);
+            chartBarInstance = new Chart(ctx, config);
         }
 
         return () => {
-            if (chartRef.current) {
-                chartRef.current.destroy();
+            if (chartBarInstance) {
+                chartBarInstance.destroy();
             }
         };
     }, []);

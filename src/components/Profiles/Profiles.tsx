@@ -1,9 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-// components
-
-export default function Profiles({ color }) {
+type ProfilesProps = {
+    color?: "light" | "dark";
+};
+export default function Profiles({ color }: ProfilesProps) {
     return (
         <>
             <div

@@ -1,10 +1,9 @@
-import React, { useEffect, useRef } from "react";
-import Chart from "chart.js/auto";
+import React, { useEffect } from "react";
+import Chart, { ChartConfiguration } from "chart.js/auto";
 
 export default function CardLineChart() {
-    const chartRef = useRef(null);
     useEffect(() => {
-        var config = {
+        let config: ChartConfiguration = {
             type: "line",
             data: {
                 labels: [
@@ -38,66 +37,46 @@ export default function CardLineChart() {
                 responsive: true,
                 plugins: {
                     legend: {
-                        labels: {
-                            fontColor: "white",
-                        },
                         align: "end",
                         position: "bottom",
                     },
                 },
                 scales: {
                     x: {
-                        ticks: {
-                            fontColor: "rgba(255,255,255,.7)",
-                        },
                         title: {
                             display: false,
                             text: "Month",
-                            fontColor: "white",
                         },
                         grid: {
                             display: false,
-                            borderDash: [2],
-                            borderDashOffset: [2],
                             color: "rgba(33, 37, 41, 0.3)",
-                            zeroLineColor: "rgba(0, 0, 0, 0)",
-                            zeroLineBorderDash: [2],
-                            zeroLineBorderDashOffset: [2],
                         },
                     },
                     y: {
-                        ticks: {
-                            fontColor: "rgba(255,255,255,.7)",
-                        },
                         title: {
                             display: false,
                             text: "Value",
-                            fontColor: "white",
                         },
                         grid: {
-                            borderDash: [3],
-                            borderDashOffset: [3],
-                            drawBorder: false,
                             color: "rgba(255, 255, 255, 0.15)",
-                            zeroLineColor: "rgba(33, 37, 41, 0)",
-                            zeroLineBorderDash: [2],
-                            zeroLineBorderDashOffset: [2],
                         },
                     },
                 },
             },
         };
-        var ctx = document.getElementById("line-chart") as HTMLCanvasElement | null;
+        let chartLineInstance = null as Chart | null;
+        let ctx = document.getElementById("bar-chart") as HTMLCanvasElement | null;
         if (ctx) {
-            if (chartRef.current) {
-                // If a chart instance already exists, destroy it before creating a new one
-                chartRef.current.destroy();
+            if (chartLineInstance) {
+                chartLineInstance.destroy();
             }
-            chartRef.current = new Chart(ctx, config);
+
+            chartLineInstance = new Chart(ctx, config);
         }
+
         return () => {
-            if (chartRef.current) {
-                chartRef.current.destroy();
+            if (chartLineInstance) {
+                chartLineInstance.destroy();
             }
         };
     }, []);

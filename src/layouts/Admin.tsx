@@ -1,10 +1,13 @@
 import React from "react";
 import AdminNavbar from "../components/Navbars/adminNavbar";
 import Sidebar from "../components/Sidebars/Sidebar";
-import HeaderStats from "../components/headers/headerStats";
-import FooterAdmin from "../components/footers/footerAdmin";
+import HeaderStats from "../components/Headers/HeaderStats";
+import FooterAdmin from "../components/Footers/FooterAdmin";
 
-export default function Admin({ children }) {
+type AdminProps = {
+    children: React.ReactNode;
+};
+export default function Admin({ children }: AdminProps) {
   return (
     <>
       <Sidebar />
