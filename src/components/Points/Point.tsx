@@ -1,14 +1,14 @@
 import toast from "react-hot-toast";
-import type { Task, TaskProps, TaskData } from "../../types";
+import type { TaskProps, TaskData } from "../../types";
 import { api } from "../../utils/api";
 
 export function Point({ task }: TaskProps) {
-    const { id, name, point, review, testing, status } = task
+    const { id, name, sprintId, point, review, testing, status, assignee } = task
 
     const trpc = api.useContext();
 
     const { mutate: updateMutation } = api.task.update.useMutation({
-        onMutate: async (data: TaskData) => {
+        onMutate: async (data: any) => {
             await trpc.task.all.cancel()
             const previousQuests = trpc.task.all.getData()
 
@@ -18,6 +18,8 @@ export function Point({ task }: TaskProps) {
                     if (t.id === id) {
                         return ({
                             ...t,
+                            assigneeId: data.assigneeId,
+                            sprint: data.sprint,
                             point: data.point,
                             review: data.review,
                             testing: data.testing,
@@ -30,13 +32,7 @@ export function Point({ task }: TaskProps) {
             return { previousQuests }
         },
 
-        onSuccess: (err, { }) => {
-            // if (status) {
-            //     toast.success("Quest completed 🎉")
-            // }
-        },
-
-        onError: (err, status, context) => {
+        onError: (_err, _status, context) => {
             toast.error(`An error occured when updating task`)
             if (!context) return
             trpc.task.all.setData(undefined, () => context.previousQuests)
@@ -51,6 +47,24 @@ export function Point({ task }: TaskProps) {
             <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
                 [{id}] {name}
             </th>
+            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                <select value={assignee?.id ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={(e) => {
+                        updateMutation({ id, assigneeId: e.target.value });
+                    }
+                    }>
+                    <option value="0">{assignee?.username}</option>
+                </select>
+            </td>
+            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                <select value={sprintId ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={(e) => {
+                        updateMutation({ id, sprintId: e.target.value });
+                    }
+                    }>
+                    <option value="0">{sprintId}</option>
+                </select>
+            </td>
             <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                 <select value={point?.toString()} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {

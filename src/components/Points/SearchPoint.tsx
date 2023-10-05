@@ -1,51 +1,23 @@
 import { useState } from "react"
 import toast from "react-hot-toast";
 import { api } from "../../utils/api";
-import { TaskInput } from "../../types";
-import type { Task } from "../../types";
+import { SearchTask } from "../../types";
 
 export function SearchPoint() {
-    const [newTask, setNewTask] = useState("")
+    const [id, setId] = useState("")
+    const [type, setType] = useState("")
 
     const trpc = api.useContext();
 
-    const { mutate } = api.task.create.useMutation({
-        onMutate: async (newTask) => {
-
-            // Cancel any outgoing refetches so they don't overwrite our optimistic update
-            await trpc.task.all.cancel()
-
-            // Snapshot the previous value
-            const previousTasks = trpc.task.all.getData()
-
-            // @ts-ignore-next-line
-            trpc.task.all.setData(undefined, (prev: any) => {
-                const optimisticTask: Task = {
-                    id: '',
-                    name: '',
-                    point: null,
-                    review: null,
-                    testing: null,
-                    sprint: '',
-                    status: '',
-                }
-                if (!prev) return [optimisticTask]
-                // @ts-ignore-next-line
-                return [...prev, optimisticTask]
-            })
-
-            // Clear input
-            setNewTask('')
-
-            // Return a context object with the snapshotted value
-            return { previousTasks }
+    const { mutate } = api.task.setListId.useMutation({
+        onMutate: async () => {
+            setId('')
+            await trpc.task.all.invalidate()
+            await trpc.task.all.refetch()
         },
-        // If the mutation fails,
-        // use the context returned from onMutate to roll back
-        onError: (err, newTask, context) => {
+        onError: (newTask: any, context: any) => {
             toast.error("An error occured when creating task")
-            // Clear input
-            setNewTask(newTask)
+            setId(newTask)
             if (!context) return
             trpc.task.all.setData(undefined, () => context.previousTasks)
         },
@@ -60,26 +32,34 @@ export function SearchPoint() {
         <div className="float-right">
             <form onSubmit={(e) => {
                 e.preventDefault()
-                const result = TaskInput.safeParse(newTask)
+                const result = SearchTask.safeParse({ id, type })
 
                 if (!result.success) {
                     toast.error(result.error.format()._errors.join('\n'))
                     return
                 }
 
-                mutate(newTask)
+                mutate({ id, type })
             }} className="flex gap-2">
-                <input
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-700 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="List id..."
-                    type="text" name="new-task" id="new-task"
-                    value={newTask}
+                <select value={type} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
-                        setNewTask(e.target.value)
+                        setType(e.target.value)
+                    }
+                    }>
+                    <option value="list">List ID</option>
+                    <option value="task">Task ID</option>
+                </select>
+                <input
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-700 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 ml-3 mr-3"
+                    placeholder={type === "task" ? "Task ID ..." : "List ID ..."}
+                    type="text" name="new-task" id="new-task"
+                    value={id}
+                    onChange={(e) => {
+                        setId(e.target.value)
                     }}
                 />
                 <button
-                    className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white border border-blue-500 w-full sm:w-auto px-5 py-2.5 text-center hover:border-transparent rounded ml-3"
+                    className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white border border-blue-500 w-full sm:w-auto px-5 py-2.5 text-center hover:border-transparent rounded"
                 >
                     Find Tasks
                 </button>

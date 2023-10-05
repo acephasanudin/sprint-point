@@ -142,7 +142,7 @@ export default function Sidebar() {
                                                 : "text-blueGray-300")
                                         }
                                     ></i>{" "}
-                                    point
+                                    sprint point
                                 </Link>
                             </li>
                             <li className="items-center">

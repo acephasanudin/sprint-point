@@ -9,7 +9,6 @@ type PointsProps = {
 };
 export default function Points({ color }: PointsProps) {
     const { data: tasks, isLoading, isError } = api.task.all.useQuery();
-    // const sprint = tasks?.length ? tasks[0]?.sprint : 0;
 
     if (isLoading) return <div>Loading tasks 🔄</div>
     if (isError) return <div>Error fetching tasks ❌</div>
@@ -30,7 +29,7 @@ export default function Points({ color }: PointsProps) {
                                     (color === "light" ? "text-blueGray-700" : "text-white")
                                 }
                             >
-                                Card Tables
+                                Task List
                             </h3>
                             <SearchPoint />
                         </div>
@@ -50,6 +49,26 @@ export default function Points({ color }: PointsProps) {
                                     }
                                 >
                                     Task
+                                </th>
+                                <th
+                                    className={
+                                        "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
+                                        (color === "light"
+                                            ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
+                                            : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
+                                    }
+                                >
+                                    PIC
+                                </th>
+                                <th
+                                    className={
+                                        "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
+                                        (color === "light"
+                                            ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
+                                            : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
+                                    }
+                                >
+                                    Sprint
                                 </th>
                                 <th
                                     className={
