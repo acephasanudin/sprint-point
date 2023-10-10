@@ -106,3 +106,8 @@ export interface Task {
 export interface TaskListResponse {
     tasks: Task[];
 }
+
+export interface Sprint {
+    id: string;
+    name: string;
+}

@@ -1,12 +1,15 @@
 import toast from "react-hot-toast";
 import type { TaskProps, TaskData } from "../../types";
 import { api } from "../../utils/api";
+import { ProfileOptions } from "../Profiles/ProfileOptions";
+import { SprintOptions } from "../Sprints/SprintOptions";
 
 export function Point({ task }: TaskProps) {
-    const { id, name, sprintId, point, review, testing, status, assignee } = task
+    const { data: profiles, isLoading, isError } = api.profile.all.useQuery();
+    const { data: sprints, isLoading: isSprintLoading, isError: isSprintError } = api.sprint.all.useQuery();
 
+    const { id, name, sprintId, point, review, testing, status, assigneeId } = task
     const trpc = api.useContext();
-
     const { mutate: updateMutation } = api.task.update.useMutation({
         onMutate: async (data: any) => {
             await trpc.task.all.cancel()
@@ -19,7 +22,7 @@ export function Point({ task }: TaskProps) {
                         return ({
                             ...t,
                             assigneeId: data.assigneeId,
-                            sprint: data.sprint,
+                            sprintId: data.sprintId,
                             point: data.point,
                             review: data.review,
                             testing: data.testing,
@@ -42,18 +45,29 @@ export function Point({ task }: TaskProps) {
         },
     });
 
+    if (isLoading) return <option>Loading profile 🔄</option>
+    if (isError) return <option>Error fetching profile ❌</option>
+
+    if (isSprintLoading) return <option>Loading sprint 🔄</option>
+    if (isSprintError) return <option>Error fetching sprint ❌</option>
+
     return (
         <tr>
             <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
-                [{id}] {name}
+                [{id}] {name?.substring(0, 50)}...
             </th>
             <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                <select value={assignee?.id ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                <select value={assigneeId ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
                         updateMutation({ id, assigneeId: e.target.value });
                     }
                     }>
-                    <option value="0">{assignee?.username}</option>
+                    <option value=""></option>
+                    {profiles.length ?
+                        profiles.map((profile: any) => {
+                            return <ProfileOptions key={profile.id} profile={profile} />
+                        })
+                        : <option>Profile not found...</option>}
                 </select>
             </td>
             <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
@@ -62,7 +76,12 @@ export function Point({ task }: TaskProps) {
                         updateMutation({ id, sprintId: e.target.value });
                     }
                     }>
-                    <option value="0">{sprintId}</option>
+                    <option value=""></option>
+                    {sprints.length ?
+                        sprints.map((sprint: any) => {
+                            return <SprintOptions key={sprint.id} sprint={sprint} />
+                        })
+                        : <option>Sprint not found...</option>}
                 </select>
             </td>
             <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">

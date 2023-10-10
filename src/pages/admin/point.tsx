@@ -5,7 +5,7 @@ import { authOptions } from "../../server/auth";
 import Points from "../../components/Points/Points";
 import Admin from "../../layouts/Admin";
 import CardGeneratePoint from "../../components/Cards/CardGeneratePoint";
-import CardSprint from "../../components/Cards/CardSprint";
+import Sprints from "../../components/Sprints/Sprints";
 
 export default function PointPage({ }: InferGetServerSidePropsType<typeof getServerSideProps>) {
     return (
@@ -15,7 +15,7 @@ export default function PointPage({ }: InferGetServerSidePropsType<typeof getSer
                     <CardGeneratePoint />
                 </div>
                 <div className="w-full xl:w-4/12 px-4">
-                    <CardSprint />
+                    <Sprints />
                 </div>
             </div>
             <div className="flex flex-wrap mt-4">

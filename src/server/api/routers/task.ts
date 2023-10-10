@@ -1,31 +1,36 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { SearchTask } from "../../../types";
-import { TaskListResponse, Task } from "../../../interfaces";
+import { TaskListResponse, Task, Sprint } from "../../../interfaces";
 import axios, { AxiosRequestConfig } from 'axios';
 let ID = '';
 let Type = '';
+let SprintId = '';
 
 export const taskRouter = createTRPCRouter({
     all: protectedProcedure.query(async ({ ctx }) => {
+        const where: any = {};
+        if (SprintId !== '') {
+            where['sprintId'] = SprintId;
+        }
         if (ID === '') {
             const listTasks = await ctx.prisma.task.findMany({
+                where,
                 include: { assignee: true }
             });
-            return listTasks.map(({ id, name, point, review, testing, sprintId, status, assignee }) => ({ id, name, point, review, testing, sprintId, status, assignee }));
+            return listTasks.map(({ id, name, point, review, testing, sprintId, status, assignee, assigneeId }) => ({ id, name, point, review, testing, sprintId, status, assignee, assigneeId }));
         }
-        const where: any = {};
-        if (Type === 'list') {
-            where['listId'] = ID;
-        } else {
+        if (Type === 'task') {
             where['id'] = ID;
+        } else {
+            where['listId'] = ID;
         }
         const listTasks = await ctx.prisma.task.findMany({
             where,
             include: { assignee: true }
         });
 
-        const tasks = listTasks.map(({ id, name, point, review, testing, sprintId, assignee, status }) => ({
+        const tasks = listTasks.map(({ id, name, point, review, testing, sprintId, assignee, assigneeId, status }) => ({
             id,
             name,
             point,
@@ -33,6 +38,7 @@ export const taskRouter = createTRPCRouter({
             testing,
             sprintId,
             assignee,
+            assigneeId,
             status
         }));
         return tasks;
@@ -40,6 +46,8 @@ export const taskRouter = createTRPCRouter({
     setListId: protectedProcedure.input(SearchTask).mutation(async ({ ctx, input }) => {
         ID = input.id;
         Type = input.type;
+        // create variable sprint as any types
+        let sprint:any = {};
         const API_TOKEN = process.env.CLICKUP_API_TOKEN;
         const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
         const headers: AxiosRequestConfig = {
@@ -50,8 +58,20 @@ export const taskRouter = createTRPCRouter({
         };
         if (Type === 'task') {
             const taskClickup = await axios.get<Task>(`${BASE_URL}task/${ID}`, headers);
-
             const { id, name, description, status, assignees, tags, team_id, url, list, project } = taskClickup.data;
+            if(list.name.includes('Sprint')) {
+                sprint = await ctx.prisma.sprint.upsert({
+                    where: {
+                        name: list.name,
+                    },
+                    update: {
+                        name: list.name,
+                    },
+                    create: {
+                        name: list.name,
+                    },
+                });
+            }
             if (assignees.length !== 0) {
                 assignees.forEach(async (assignee) => {
                     await ctx.prisma.profile.upsert({
@@ -98,23 +118,12 @@ export const taskRouter = createTRPCRouter({
                     description,
                     status: status.status,
                     assigneeId: assignees[0]?.id?.toString(),
-                    // sprint: list.name,
+                    sprintId: sprint?.id,
                     tags: tags.map(({ name }) => name).join(', '),
                     teamId: team_id,
                     url,
                     listId: list.id,
                     projectId: project.id
-                },
-            });
-            await ctx.prisma.sprint.upsert({
-                where: {
-                    name: list.name,
-                },
-                update: {
-                    name: list.name,
-                },
-                create: {
-                    name: list.name,
                 },
             });
             return true;
@@ -123,6 +132,19 @@ export const taskRouter = createTRPCRouter({
         const clickupTasks: Task[] = listClickupTasks.data.tasks;
         clickupTasks.forEach(async (task) => {
             const { id, name, description, status, assignees, tags, team_id, url, list, project } = task;
+            if(list.name.includes('Sprint')) {
+                sprint = await ctx.prisma.sprint.upsert({
+                    where: {
+                        name: list.name,
+                    },
+                    update: {
+                        name: list.name,
+                    },
+                    create: {
+                        name: list.name,
+                    },
+                });
+            }
             if (assignees.length !== 0) {
                 assignees.forEach(async (assignee) => {
                     await ctx.prisma.profile.upsert({
@@ -169,7 +191,7 @@ export const taskRouter = createTRPCRouter({
                     description,
                     status: status.status,
                     assigneeId: assignees[0]?.id?.toString(),
-                    // sprint: list.name,
+                    sprintId: sprint?.id,
                     tags: tags.map(({ name }) => name).join(', '),
                     teamId: team_id,
                     url,
@@ -182,22 +204,29 @@ export const taskRouter = createTRPCRouter({
     }),
     update: protectedProcedure.input(z.object({
         id: z.string(),
-        assigneeId : z.optional(z.string()),
+        assigneeId: z.optional(z.string()),
         sprintId: z.optional(z.string()),
         point: z.optional(z.number()),
         review: z.optional(z.number()),
         testing: z.optional(z.number()),
     })).mutation(({ ctx, input }) => {
-        const { id, point, review, testing } = input;
+        const { id, assigneeId, sprintId, point, review, testing } = input;
         return ctx.prisma.task.update({
             where: {
                 id,
             },
             data: {
+                assigneeId,
+                sprintId,
                 point,
                 review,
                 testing,
             },
         });
+    }),
+    setSprintId: protectedProcedure.input(z.object({
+        sprint: z.string(),
+    })).mutation(({ input }) => {
+        SprintId = input.sprint;
     }),
 });
