@@ -2,7 +2,7 @@ import React from "react";
 import { api } from "../../utils/api";
 import { Sprint } from "./Sprint";
 
-export default function Sprints() {
+export default function SprintAverages() {
     const { data: sprints, isLoading, isError } = api.sprint.all.useQuery();
 
     if (isLoading) return <div>Loading sprint 🔄</div>
@@ -14,7 +14,7 @@ export default function Sprints() {
                     <div className="flex flex-wrap items-center">
                         <div className="relative w-full px-4 max-w-full flex-grow flex-1">
                             <h3 className="font-semibold text-base text-blueGray-700">
-                                Sprint List
+                                Sprint Averages
                             </h3>
                         </div>
                     </div>
@@ -27,7 +27,13 @@ export default function Sprints() {
                                     ID
                                 </th>
                                 <th className="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                                    Report
+                                    Avg. Sprint Point
+                                </th>
+                                <th className="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                                    Avg. Review Point
+                                </th>
+                                <th className="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                                    Avg. Testing Point
                                 </th>
                             </tr>
                         </thead>

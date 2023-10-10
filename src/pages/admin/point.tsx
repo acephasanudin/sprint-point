@@ -4,18 +4,18 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "../../server/auth";
 import Points from "../../components/Points/Points";
 import Admin from "../../layouts/Admin";
-import CardGeneratePoint from "../../components/Cards/CardGeneratePoint";
-import Sprints from "../../components/Sprints/Sprints";
+import SprintAverages from "../../components/Sprints/SprintAverages";
+import SprintEstimations from "../../components/Sprints/SprintEstimations";
 
 export default function PointPage({ }: InferGetServerSidePropsType<typeof getServerSideProps>) {
     return (
         <Admin>
             <div className="flex flex-wrap mt-4">
                 <div className="w-full xl:w-8/12 mb-12 xl:mb-0 px-4">
-                    <CardGeneratePoint />
+                    <SprintAverages />
                 </div>
                 <div className="w-full xl:w-4/12 px-4">
-                    <Sprints />
+                    <SprintEstimations />
                 </div>
             </div>
             <div className="flex flex-wrap mt-4">

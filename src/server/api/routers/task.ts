@@ -227,6 +227,8 @@ export const taskRouter = createTRPCRouter({
     setSprintId: protectedProcedure.input(z.object({
         sprint: z.string(),
     })).mutation(({ input }) => {
+        ID = '';
+        Type = '';
         SprintId = input.sprint;
     }),
 });
