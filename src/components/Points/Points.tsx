@@ -58,16 +58,6 @@ export default function Points({ color }: PointsProps) {
                                             : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
                                     }
                                 >
-                                    PIC
-                                </th>
-                                <th
-                                    className={
-                                        "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
-                                        (color === "light"
-                                            ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
-                                            : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                                    }
-                                >
                                     Sprint
                                 </th>
                                 <th
@@ -88,46 +78,28 @@ export default function Points({ color }: PointsProps) {
                                             : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
                                     }
                                 >
-                                    Review
-                                </th>
-                                <th
-                                    className={
-                                        "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
-                                        (color === "light"
-                                            ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
-                                            : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                                    }
-                                >
-                                    Testing
-                                </th>
-                                <th
-                                    className={
-                                        "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
-                                        (color === "light"
-                                            ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
-                                            : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                                    }
-                                >
                                     Status
                                 </th>
-                                <th
-                                    className={
-                                        "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
-                                        (color === "light"
-                                            ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
-                                            : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                                    }
-                                ></th>
                             </tr>
                         </thead>
                         <tbody>
                             {tasks.length ?
-                                // @ts-ignore-next-line
                                 tasks.map((task: any) => {
-                                    // @ts-ignore-next-line
                                     return <Point key={task.id} task={task} />
                                 })
                                 : <tr>Task not found...</tr>}
+                            <tr>
+                                <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
+                                </td>
+                                <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                                </td>
+                                <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                                    {tasks.reduce((a: any, b: any) => a + (b['point'] || 0), 0)}
+                                </td>
+                                <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

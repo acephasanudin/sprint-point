@@ -65,12 +65,23 @@ model Task {
     listId      String?
     projectId   String?
     point       Float?
-    review      Float?
-    testing     Float?
     sprintId    String?
     sprint      Sprint?  @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+    points      Points[]
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
+}
+
+model Points {
+    id        String   @id
+    profileId String?
+    profile   Profile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
+    taskId    String?
+    task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+    type      String? // review, testing
+    point     Float?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Profile {
@@ -83,6 +94,7 @@ model Profile {
     teamId    String?
     team      Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
     tasks     Task[]
+    points    Points[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

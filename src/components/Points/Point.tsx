@@ -1,14 +1,12 @@
 import toast from "react-hot-toast";
-import type { TaskProps, TaskData } from "../../types";
+import type { TaskProps } from "../../types";
 import { api } from "../../utils/api";
-import { ProfileOptions } from "../Profiles/ProfileOptions";
 import { SprintOptions } from "../Sprints/SprintOptions";
 
 export function Point({ task }: TaskProps) {
-    const { data: profiles, isLoading, isError } = api.profile.all.useQuery();
     const { data: sprints, isLoading: isSprintLoading, isError: isSprintError } = api.sprint.all.useQuery();
 
-    const { id, name, sprintId, point, review, testing, status, assigneeId } = task
+    const { id, name, sprintId, point, status, assignee } = task
     const trpc = api.useContext();
     const { mutate: updateMutation } = api.task.update.useMutation({
         onMutate: async (data: any) => {
@@ -24,8 +22,6 @@ export function Point({ task }: TaskProps) {
                             assigneeId: data.assigneeId,
                             sprintId: data.sprintId,
                             point: data.point,
-                            review: data.review,
-                            testing: data.testing,
                         })
                     }
                     return t
@@ -45,31 +41,19 @@ export function Point({ task }: TaskProps) {
         },
     });
 
-    if (isLoading) return <option>Loading profile 🔄</option>
-    if (isError) return <option>Error fetching profile ❌</option>
-
     if (isSprintLoading) return <option>Loading sprint 🔄</option>
     if (isSprintError) return <option>Error fetching sprint ❌</option>
 
     return (
         <tr>
             <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
-                [{id}] {name?.substring(0, 50)}...
+                <img
+                    src={assignee?.avatar || "/img/no-avatar.png"}
+                    className="h-12 w-12 bg-white rounded-full border mr-2"
+                    alt="..."
+                    title={assignee?.username ?? ''}
+                ></img> <a href={'https://app.clickup.com/t/' + id} target='_blank'> {name?.substring(0, 50)}... </a>
             </th>
-            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                <select value={assigneeId ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    onChange={(e) => {
-                        updateMutation({ id, assigneeId: e.target.value });
-                    }
-                    }>
-                    <option value=""></option>
-                    {profiles.length ?
-                        profiles.map((profile: any) => {
-                            return <ProfileOptions key={profile.id} profile={profile} />
-                        })
-                        : <option>Profile not found...</option>}
-                </select>
-            </td>
             <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                 <select value={sprintId ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
@@ -88,38 +72,6 @@ export function Point({ task }: TaskProps) {
                 <select value={point?.toString()} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
                         updateMutation({ id, point: parseFloat(e.target.value) });
-                    }
-                    }>
-                    <option value="0">0</option>
-                    <option value="0.25">0.25</option>
-                    <option value="0.5">0.5</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="5">5</option>
-                    <option value="8">8</option>
-                </select>
-            </td>
-            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                <select value={review?.toString()} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    onChange={(e) => {
-                        updateMutation({ id, review: parseFloat(e.target.value) });
-                    }
-                    }>
-                    <option value="0">0</option>
-                    <option value="0.25">0.25</option>
-                    <option value="0.5">0.5</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="5">5</option>
-                    <option value="8">8</option>
-                </select>
-            </td>
-            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                <select value={testing?.toString()} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    onChange={(e) => {
-                        updateMutation({ id, testing: parseFloat(e.target.value) });
                     }
                     }>
                     <option value="0">0</option>
