@@ -1,7 +1,7 @@
 import React from "react";
 import CardLineChart from "../../components/Cards/CardLineChart";
 import CardBarChart from "../../components/Cards/CardBarChart";
-import CardPageVisits from "../../components/Cards/CardPageVisits";
+import ProfilePoints from "../../components/Profiles/ProfilePoints";
 import CardSocialTraffic from "../../components/Cards/CardSocialTraffic";
 import Admin from "../../layouts/Admin";
 import type { GetServerSidePropsContext } from "next";
@@ -21,7 +21,7 @@ export default function Dashboard() {
             </div>
             <div className="flex flex-wrap mt-4">
                 <div className="w-full xl:w-8/12 mb-12 xl:mb-0 px-4">
-                    <CardPageVisits />
+                    <ProfilePoints />
                 </div>
                 <div className="w-full xl:w-4/12 px-4">
                     <CardSocialTraffic />

@@ -2,11 +2,12 @@ import toast from "react-hot-toast";
 import type { TaskProps } from "../../types";
 import { api } from "../../utils/api";
 import { SprintOptions } from "../Sprints/SprintOptions";
+import Link from "next/link";
 
 export function Point({ task }: TaskProps) {
     const { data: sprints, isLoading: isSprintLoading, isError: isSprintError } = api.sprint.all.useQuery();
 
-    const { id, name, sprintId, point, status, assignee } = task
+    const { id, name, sprintId, point, status, assignee } = task || { id: '', name: '', sprintId: '', point: 0, status: '', assignee: { avatar: '', username: '' }};
     const trpc = api.useContext();
     const { mutate: updateMutation } = api.task.update.useMutation({
         onMutate: async (data: any) => {
@@ -91,6 +92,13 @@ export function Point({ task }: TaskProps) {
                 {status === "waiting for testing" ? <i className="fas fa-circle text-orange-500 mr-2"></i> : null}
                 {status === "ready to deploy" ? <i className="fas fa-circle text-white-500 mr-2"></i> : null}
                 {status}
+            </td>
+            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                <Link href={'/admin/point/' + id} className="bg-blueGray-700 text-white active:bg-blueGray-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1"
+                    type="button" style={{ transition: "all .15s ease" }}
+                >
+                    Detail
+                </Link>
             </td>
         </tr>
     )

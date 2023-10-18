@@ -6,6 +6,7 @@ type RouterOutput = inferRouterOutputs<AppRouter>;
 type allTasksOutput = RouterOutput["task"]["all"];
 type allProfilesOutput = RouterOutput["profile"]["all"];
 type allSprintOutput = RouterOutput["sprint"]["all"];
+type allPointOutput = RouterOutput["point"]["all"];
 
 // Tasks
 export type Task = allTasksOutput[number];
@@ -14,7 +15,7 @@ export const SearchTask = z.object({
     type: z.string(),
 });
 export type TaskProps = {
-    task: Task
+    task?: Task
 }
 export type TaskData = {
     id: string;
@@ -56,3 +57,18 @@ export const CreateSprint = z.object({
     projectId: z.string(),
 });
 
+// Points
+export type Point = allPointOutput[number];
+export type PointProps = {
+    taskId?: string;
+    type?: string;
+    last?: boolean;
+    pointObj?: Point;
+}
+export const CreatePoint = z.object({
+    id: z.optional(z.string()),
+    profileId: z.optional(z.string()),
+    taskId: z.optional(z.string()),
+    type: z.optional(z.string()),
+    point: z.optional(z.number()),
+});

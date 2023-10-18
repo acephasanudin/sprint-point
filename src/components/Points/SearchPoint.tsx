@@ -75,7 +75,7 @@ export function SearchPoint() {
                         mutateSprint({ profile: e.target.value, sprint })
                     }
                     }>
-                    <option value=""></option>
+                    <option value="">All Profile</option>
                     {profiles.length ?
                         profiles.map((profile: any) => {
                             return <ProfileOptions key={profile.id} profile={profile} />

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { SearchTask } from "../../../types";
-import { TaskListResponse, Task, Sprint } from "../../../interfaces";
+import { TaskListResponse, Task } from "../../../interfaces";
 import axios, { AxiosRequestConfig } from 'axios';
 let ID = '';
 let Type = '';
@@ -233,5 +233,32 @@ export const taskRouter = createTRPCRouter({
         SprintId = input?.sprint || '';
         ProfileId = input?.profile || '';
 
+    }),
+    setReview: protectedProcedure.input(z.object({
+        id: z.string(),
+        pic: z.string(),
+        point: z.optional(z.number()),
+    })).mutation(({ ctx, input }) => {
+        // model Points {
+        //     id        String   @id
+        //     profileId String?
+        //     profile   Profile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
+        //     taskId    String?
+        //     task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+        //     type      String? // review, testing
+        //     point     Float?
+        //     createdAt DateTime @default(now())
+        //     updatedAt DateTime @updatedAt
+        // }
+        const { id, pic, point } = input;
+        // return ctx.prisma.point.upsert({
+        //     where: {
+        //         id,
+        //     },
+        //     data: {
+        //         pic,
+        //         point,
+        //     },
+        // });
     }),
 });
