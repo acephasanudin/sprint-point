@@ -1,11 +1,37 @@
 import type { ProfileProps } from "../../types";
 
-export function ProfilePoint({ profile }: ProfileProps) {
-    const { id, username, color, avatar, tasks, points } = profile
-    const point = tasks.reduce((a: any, b: any) => a + (b['point'] || 0), 0)
-    const review = points.reduce((a: any, b: any) => a + (b['type'] === 'review' ? b['point'] || 0 : 0), 0)
-    const testing = points.reduce((a: any, b: any) => a + (b['type'] === 'testing' ? b['point'] || 0 : 0), 0)
+function calcPoint(tasks: any, sprintId: any) {
+    const validTasks = tasks.filter((task: any) => {
+        return ['review', 'review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(task['status'])
+    })
+    return validTasks.reduce((a: any, b: any) => a + (
+        sprintId ? b['sprintId'] === sprintId ? b['point'] || 0 : 0 : b['point'] || 0
+    ), 0)
+}
 
+function calcReview(points: any, sprintId: any) {
+    const validPoints = points.filter((point: any) => {
+        return ['review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['type'])
+    })
+    return validPoints.reduce((a: any, b: any) => a + (
+        sprintId ? b['type'] === 'review' && b['task']['sprintId'] === sprintId ? b['point'] || 0 : 0 : b['type'] === 'review' ? b['point'] || 0 : 0
+    ), 0)
+}
+
+function calcTesting(points: any, sprintId: any) {
+    const validPoints = points.filter((point: any) => {
+        return ['accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['type'])
+    })
+    return validPoints.reduce((a: any, b: any) => a + (
+        sprintId ? b['type'] === 'testing' && b['task']['sprintId'] === sprintId ? b['point'] || 0 : 0 : b['type'] === 'testing' ? b['point'] || 0 : 0
+    ), 0)
+}
+
+export function ProfilePoint({ sprintId, profile }: ProfileProps) {
+    const { username, color, avatar, tasks, points } = profile
+    const point = calcPoint(tasks, sprintId)
+    const review = calcReview(points, sprintId)
+    const testing = calcTesting(points, sprintId)
     return (
         <tr>
             <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">

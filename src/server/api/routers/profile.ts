@@ -4,7 +4,11 @@ export const profileRouter = createTRPCRouter({
     all: protectedProcedure.query(async ({ ctx }) => {
         const listProfiles = await ctx.prisma.profile.findMany({
             include: {
-                points: true,
+                points: {
+                    include: {
+                        task: true,
+                    },
+                },
                 tasks: true,
             },
         });

@@ -27,6 +27,7 @@ export type TaskData = {
 // Profiles
 export type Profile = allProfilesOutput[number];
 export type ProfileProps = {
+    sprintId?: string;
     profile: Profile
 }
 export type ProfileData = {
