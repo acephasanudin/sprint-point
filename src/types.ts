@@ -7,12 +7,17 @@ type allTasksOutput = RouterOutput["task"]["all"];
 type allProfilesOutput = RouterOutput["profile"]["all"];
 type allSprintOutput = RouterOutput["sprint"]["all"];
 type allPointOutput = RouterOutput["point"]["all"];
+type allFolderOutput = RouterOutput["folder"]["all"];
 
 // Tasks
 export type Task = allTasksOutput[number];
 export const SearchTask = z.object({
-    id: z.string(),
-    type: z.string(),
+    id: z.optional(z.string()),
+    type: z.optional(z.string()),
+    sprintId: z.optional(z.string()),
+    profileId: z.optional(z.string()),
+    folderId: z.optional(z.string()),
+
 });
 export type TaskProps = {
     task?: Task
@@ -72,4 +77,14 @@ export const CreatePoint = z.object({
     taskId: z.optional(z.string()),
     type: z.optional(z.string()),
     point: z.optional(z.number()),
+    sprintId: z.optional(z.string()),
+});
+
+export type Folder = allFolderOutput[number];
+export type FolderProps = {
+    folder: Folder
+}
+export const CreateFolder = z.object({
+    id: z.optional(z.string()),
+    name: z.optional(z.string()),
 });

@@ -14,7 +14,7 @@ export const pointRouter = createTRPCRouter({
                 type: 'review',
             },
         });
-        return listPoints.map(({ id, profileId, point }: any) => ({ id, profileId, point }));
+        return listPoints.map(({ id, profileId, point, sprintId }: any) => ({ id, profileId, point, sprintId }));
     }),
     testings: protectedProcedure.input(z.string()).query(async ({ ctx, input }: any) => {
         const listPoints = await ctx.prisma.point.findMany({
@@ -23,7 +23,7 @@ export const pointRouter = createTRPCRouter({
                 type: 'testing',
             },
         });
-        return listPoints.map(({ id, profileId, point }: any) => ({ id, profileId, point }));
+        return listPoints.map(({ id, profileId, point, sprintId }: any) => ({ id, profileId, point, sprintId }));
     }),
     create: protectedProcedure.input(CreatePoint).mutation(async ({ ctx, input }: any) => {
         const point = await ctx.prisma.point.create({

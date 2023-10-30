@@ -7,10 +7,14 @@ let ID = '';
 let Type = '';
 let SprintId = '';
 let ProfileId = '';
+let FolderId = '';
 
 export const taskRouter = createTRPCRouter({
     all: protectedProcedure.query(async ({ ctx }) => {
         const where: any = {};
+        if (FolderId !== '') {
+            where['folderId'] = FolderId;
+        }
         if (SprintId !== '') {
             where['sprintId'] = SprintId;
         }
@@ -44,166 +48,38 @@ export const taskRouter = createTRPCRouter({
         }));
         return tasks;
     }),
-    setListId: protectedProcedure.input(SearchTask).mutation(async ({ ctx, input }) => {
-        ID = input.id;
-        Type = input.type;
-        SprintId = '';
-        ProfileId = '';
-        // create variable sprint as any types
-        let sprint: any = {};
-        const API_TOKEN = process.env.CLICKUP_API_TOKEN;
-        const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
-        const headers: AxiosRequestConfig = {
-            headers: {
-                'Authorization': API_TOKEN,
-                'Content-Type': 'application/json',
-            },
-        };
-        if (Type === 'task') {
-            const taskClickup = await axios.get<Task>(`${BASE_URL}task/${ID}`, headers);
-            const { id, name, description, status, assignees, tags, team_id, url, list, project } = taskClickup.data;
-            if (list.name.includes('Sprint')) {
-                sprint = await ctx.prisma.sprint.upsert({
-                    where: {
-                        name: list.name,
-                    },
-                    update: {
-                        name: list.name,
-                    },
-                    create: {
-                        name: list.name,
-                    },
-                });
-            }
-            if (assignees.length !== 0) {
-                assignees.forEach(async (assignee) => {
-                    await ctx.prisma.profile.upsert({
-                        where: {
-                            id: assignee?.id?.toString(),
-                        },
-                        update: {
-                            username: assignee?.username,
-                            color: assignee?.color,
-                            initials: assignee?.initials,
-                            avatar: assignee?.profilePicture,
-                            email: assignee?.email,
-                            teamId: team_id,
-                        },
-                        create: {
-                            id: assignee?.id?.toString() || '',
-                            username: assignee?.username,
-                            color: assignee?.color,
-                            initials: assignee?.initials,
-                            avatar: assignee?.profilePicture,
-                            email: assignee?.email,
-                            teamId: team_id,
-                        },
-                    });
-                });
-            }
-            await ctx.prisma.task.upsert({
-                where: {
-                    id,
-                },
-                update: {
-                    name,
-                    description,
-                    status: status.status,
-                    assigneeId: assignees[0]?.id?.toString(),
-                    tags: tags.map(({ name }) => name).join(', '),
-                    teamId: team_id,
-                    url,
-                    listId: list.id,
-                    projectId: project.id
-                },
-                create: {
-                    id,
-                    name,
-                    description,
-                    status: status.status,
-                    assigneeId: assignees[0]?.id?.toString(),
-                    sprintId: sprint?.id,
-                    tags: tags.map(({ name }) => name).join(', '),
-                    teamId: team_id,
-                    url,
-                    listId: list.id,
-                    projectId: project.id
-                },
-            });
-            return true;
-        }
-        const listClickupTasks = await axios.get<TaskListResponse>(`${BASE_URL}list/${ID}/task`, headers);
-        const clickupTasks: Task[] = listClickupTasks.data.tasks;
-        clickupTasks.forEach(async (task) => {
-            const { id, name, description, status, assignees, tags, team_id, url, list, project } = task;
-            if (list.name.includes('Sprint')) {
-                sprint = await ctx.prisma.sprint.upsert({
-                    where: {
-                        name: list.name,
-                    },
-                    update: {
-                        name: list.name,
-                    },
-                    create: {
-                        name: list.name,
-                    },
-                });
-            }
-            if (assignees.length !== 0) {
-                assignees.forEach(async (assignee) => {
-                    await ctx.prisma.profile.upsert({
-                        where: {
-                            id: assignee?.id?.toString(),
-                        },
-                        update: {
-                            username: assignee?.username,
-                            color: assignee?.color,
-                            initials: assignee?.initials,
-                            avatar: assignee?.profilePicture,
-                            email: assignee?.email,
-                            teamId: team_id,
-                        },
-                        create: {
-                            id: assignee?.id?.toString() || '',
-                            username: assignee?.username,
-                            color: assignee?.color,
-                            initials: assignee?.initials,
-                            avatar: assignee?.profilePicture,
-                            email: assignee?.email,
-                            teamId: team_id,
-                        },
-                    });
-                });
-            }
-            await ctx.prisma.task.upsert({
-                where: {
-                    id,
-                },
-                update: {
-                    name,
-                    description,
-                    status: status.status,
-                    tags: tags.map(({ name }) => name).join(', '),
-                    teamId: team_id,
-                    url,
-                    listId: list.id,
-                    projectId: project.id
-                },
-                create: {
-                    id,
-                    name,
-                    description,
-                    status: status.status,
-                    assigneeId: assignees[0]?.id?.toString(),
-                    sprintId: sprint?.id,
-                    tags: tags.map(({ name }) => name).join(', '),
-                    teamId: team_id,
-                    url,
-                    listId: list.id,
-                    projectId: project.id
-                },
-            });
+    syncClickup: protectedProcedure.mutation(async ({ ctx }) => {
+        console.log('syncClickup');
+        const { tasks, folders, sprints, profiles } = await getTaskList();
+        const createTasks = ctx.prisma.task.createMany({
+            data: tasks,
+            skipDuplicates: true,
         });
+        const createFolders = ctx.prisma.folder.createMany({
+            data: folders,
+            skipDuplicates: true,
+        });
+        const createSprints = ctx.prisma.sprint.createMany({
+            data: sprints,
+            skipDuplicates: true,
+        });
+        const createProfiles = ctx.prisma.profile.createMany({
+            data: profiles,
+            skipDuplicates: true,
+        });
+        await Promise.all([createTasks, createFolders, createSprints, createProfiles]);
+        console.log('Task Length: ' + tasks.length)
+        console.log('Folder Length: ' + folders.length)
+        console.log('Sprint Length: ' + sprints.length)
+        console.log('Profile Length: ' + profiles.length)
+        return true;
+    }),
+    setOptions: protectedProcedure.input(SearchTask).mutation(async ({ ctx, input }) => {
+        ID = input?.id || '';
+        Type = input?.type || '';
+        SprintId = input?.sprintId || '';
+        ProfileId = input?.profileId || '';
+        FolderId = input?.folderId || '';
         return true;
     }),
     update: protectedProcedure.input(z.object({
@@ -227,38 +103,97 @@ export const taskRouter = createTRPCRouter({
     setSprintId: protectedProcedure.input(z.object({
         sprint: z.optional(z.string()),
         profile: z.optional(z.string()),
+        folder: z.optional(z.string()),
     })).mutation(({ input }) => {
         ID = '';
         Type = '';
         SprintId = input?.sprint || '';
         ProfileId = input?.profile || '';
+        FolderId = input?.folder || '';
 
     }),
-    setReview: protectedProcedure.input(z.object({
-        id: z.string(),
-        pic: z.string(),
-        point: z.optional(z.number()),
-    })).mutation(({ ctx, input }) => {
-        // model Points {
-        //     id        String   @id
-        //     profileId String?
-        //     profile   Profile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
-        //     taskId    String?
-        //     task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
-        //     type      String? // review, testing
-        //     point     Float?
-        //     createdAt DateTime @default(now())
-        //     updatedAt DateTime @updatedAt
-        // }
-        const { id, pic, point } = input;
-        // return ctx.prisma.point.upsert({
-        //     where: {
-        //         id,
-        //     },
-        //     data: {
-        //         pic,
-        //         point,
-        //     },
-        // });
-    }),
 });
+
+async function getTaskList() {
+    const Tasks: any = [];
+    const Folders: any = [];
+    const Sprints: any = [];
+    const Profiles: any = [];
+
+    const TEAM_ID = process.env.CLICKUP_TEAM_ID;
+    const API_TOKEN = process.env.CLICKUP_API_TOKEN;
+    const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
+    const headers = {
+        headers: {
+            'Authorization': API_TOKEN,
+            'Content-Type': 'application/json',
+        },
+    };
+    const getSpaces = await axios.get(`${BASE_URL}team/${TEAM_ID}/space`, headers);
+    const spaces = getSpaces.data.spaces;
+    const spacePromises = spaces.map(async (space: any) => {
+        const getFolders = await axios.get(`${BASE_URL}space/${space.id}/folder`, headers);
+        const folders = getFolders.data.folders;
+        const folderPromises = folders.map(async (folder: any) => {
+            if (Folders.filter((f: any) => f.id === folder.id).length === 0) {
+                Folders.push({
+                    id: folder.id,
+                    name: folder.name
+                });
+            }
+            const getLists = await axios.get(`${BASE_URL}folder/${folder.id}/list`, headers);
+            const lists = getLists.data.lists;
+            const listPromises = lists.map(async (list: any) => {
+                const getTasks = await axios.get<TaskListResponse>(`${BASE_URL}list/${list.id}/task`, headers);
+                const tasks = getTasks.data.tasks;
+                const taskPromises = tasks.map(async (task) => {
+                    const { id, name, description, status, assignees, tags, team_id, url, list, project, folder } = task;
+                    if (list.name.includes('Sprint')) {
+                        if (Sprints.filter((s: any) => s.id === list.id).length === 0) {
+                            Sprints.push({
+                                id: list.id,
+                                name: list.name
+                            });
+                        }
+                    }
+                    if (assignees.length !== 0) {
+                        assignees.forEach(async (assignee) => {
+                            if (Profiles.filter((p: any) => p.id === assignee?.id?.toString()).length === 0) {
+                                Profiles.push({
+                                    id: assignee?.id?.toString() || '',
+                                    username: assignee?.username,
+                                    color: assignee?.color,
+                                    initials: assignee?.initials,
+                                    avatar: assignee?.profilePicture,
+                                    email: assignee?.email,
+                                    teamId: team_id,
+                                });
+                            }
+                        });
+                    }
+                    if (Tasks.filter((t: any) => t.id === id).length === 0) {
+                        Tasks.push({
+                            id,
+                            name,
+                            description,
+                            status: status.status,
+                            assigneeId: assignees[0]?.id?.toString(),
+                            // sprintId: sprint?.id,
+                            tags: tags.map(({ name }) => name).join(', '),
+                            teamId: team_id,
+                            url,
+                            listId: list.id,
+                            projectId: project.id,
+                            folderId: folder?.id
+                        });
+                    }
+                });
+                await Promise.all(taskPromises);
+            });
+            await Promise.all(listPromises);
+        });
+        await Promise.all(folderPromises);
+    });
+    await Promise.all(spacePromises);
+    return { tasks: Tasks, folders: Folders, sprints: Sprints, profiles: Profiles };
+}

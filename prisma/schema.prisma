@@ -67,9 +67,19 @@ model Task {
     point       Float?
     sprintId    String?
     sprint      Sprint?  @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+    folderId    String?
+    folder      Folder?  @relation(fields: [folderId], references: [id], onDelete: Cascade)
     points      Point[]
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
+}
+
+model Folder {
+    id        String   @id
+    name      String?
+    tasks     Task[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Point {
@@ -80,6 +90,8 @@ model Point {
     task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
     type      String? // sprint, review, testing
     point     Float?  @default(0)
+    sprintId  String?
+    sprint    Sprint? @relation(fields: [sprintId], references: [id], onDelete: Cascade)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
@@ -103,6 +115,7 @@ model Sprint {
     id        String   @id @default(cuid())
     name      String?  @unique
     tasks     Task[]
+    points    Point[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

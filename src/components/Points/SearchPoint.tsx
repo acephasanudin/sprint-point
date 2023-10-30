@@ -1,31 +1,25 @@
 import { useState } from "react"
 import toast from "react-hot-toast";
 import { api } from "../../utils/api";
-import { SearchTask } from "../../types";
 import { SprintOptions } from "../Sprints/SprintOptions";
 import { ProfileOptions } from "../Profiles/ProfileOptions";
+import { FolderOptions } from "../Folders/FolderOptions";
 
 export function SearchPoint() {
     const { data: sprints, isLoading: isSprintLoading, isError: isSprintError } = api.sprint.all.useQuery();
     const { data: profiles, isLoading: isProfileLoading, isError: isProfileError } = api.profile.all.useQuery();
+    const { data: folders, isLoading: isFolderLoading, isError: isFolderError } = api.folder.all.useQuery();
     const [id, setId] = useState("")
     const [type, setType] = useState("")
-    const [sprint, setSprint] = useState("")
-    const [profile, setProfile] = useState("")
+    const [sprintId, setSprintId] = useState("")
+    const [profileId, setProfileId] = useState("")
+    const [folderId, setFolderId] = useState("")
 
     const trpc = api.useContext();
 
-    const { mutate } = api.task.setListId.useMutation({
-        onMutate: async (data: any) => {
-            setId('')
-            setSprint('')
-            setProfile('')
-            await trpc.task.all.invalidate()
-            await trpc.task.all.refetch()
-        },
-        onError: (newTask: any, context: any) => {
-            toast.error("An error occured when creating task")
-            setId(newTask.id)
+    const { mutate: syncClickup } = api.task.syncClickup.useMutation({
+        onError: (context: any) => {
+            toast.error("An error occured when syncing task")
             if (!context) return
             trpc.task.all.setData(undefined, () => context.previousTasks)
         },
@@ -34,14 +28,17 @@ export function SearchPoint() {
         },
     });
 
-    const { mutate: mutateSprint } = api.task.setSprintId.useMutation({
+    const { mutate: mutateOptions } = api.task.setOptions.useMutation({
         onMutate: async (data: any) => {
-            setSprint(data.sprint)
-            setProfile(data.profile)
+            setId(data.id)
+            setType(data.type)
+            setSprintId(data.sprintId)
+            setProfileId(data.profileId)
+            setFolderId(data.folderId)
             await trpc.task.all.invalidate()
             await trpc.task.all.refetch()
         },
-        onError: (newSprint: any, context: any) => {
+        onError: (context: any) => {
             toast.error("An error occured when filtering task")
             if (!context) return
             trpc.task.all.setData(undefined, () => context.previousTasks)
@@ -57,22 +54,30 @@ export function SearchPoint() {
     if (isProfileLoading) return <option>Loading profile 🔄</option>
     if (isProfileError) return <option>Error fetching profile ❌</option>
 
+    if (isFolderLoading) return <option>Loading folder 🔄</option>
+    if (isFolderError) return <option>Error fetching folder ❌</option>
+
     return (
         <div className="float-right">
             <form onSubmit={(e) => {
                 e.preventDefault()
-                const result = SearchTask.safeParse({ id, type })
-
-                if (!result.success) {
-                    toast.error(result.error.format()._errors.join('\n'))
-                    return
-                }
-
-                mutate({ id, type })
+                syncClickup()
             }} className="flex gap-2">
-                <select value={profile ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ml-3 mr-3"
+                <select value={folderId ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ml-3 mr-3"
                     onChange={(e) => {
-                        mutateSprint({ profile: e.target.value, sprint })
+                            mutateOptions({ folderId: e.target.value, id, type, sprintId, profileId })
+                    }
+                    }>
+                    <option value="">All Folder</option>
+                    {folders.length ?
+                        folders.map((folder: any) => {
+                            return <FolderOptions key={folder.id} folder={folder} />
+                        })
+                        : <option>Folder not found...</option>}
+                </select>
+                <select value={profileId ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ml-3 mr-3"
+                    onChange={(e) => {
+                        mutateOptions({ profileId: e.target.value, id, type, sprintId, folderId })
                     }
                     }>
                     <option value="">All Profile</option>
@@ -82,9 +87,9 @@ export function SearchPoint() {
                         })
                         : <option>Profile not found...</option>}
                 </select>
-                <select value={sprint ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ml-3 mr-3"
+                <select value={sprintId ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ml-3 mr-3"
                     onChange={(e) => {
-                        mutateSprint({ profile, sprint: e.target.value })
+                        mutateOptions({ sprintId: e.target.value, id, type, profileId, folderId })
                     }
                     }>
                     <option value="">All Sprint</option>
@@ -96,7 +101,7 @@ export function SearchPoint() {
                 </select>
                 <select value={type} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
-                        setType(e.target.value)
+                        mutateOptions({ type: e.target.value, id, sprintId, profileId, folderId})
                     }
                     }>
                     <option value="list">List ID</option>
@@ -108,14 +113,9 @@ export function SearchPoint() {
                     type="text" name="new-task" id="new-task"
                     value={id}
                     onChange={(e) => {
-                        setId(e.target.value)
+                        mutateOptions({ id: e.target.value, type, sprintId, profileId, folderId })
                     }}
                 />
-                <button
-                    className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white border border-blue-500 w-full sm:w-auto px-5 py-2.5 text-center hover:border-transparent rounded"
-                >
-                    Find Tasks
-                </button>
             </form>
         </div>
     )
