@@ -11,19 +11,19 @@ function calcPoint(tasks: any, sprintId: any) {
 
 function calcReview(points: any, sprintId: any) {
     const validPoints = points.filter((point: any) => {
-        return ['review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['type'])
+        return ['review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])
     })
     return validPoints.reduce((a: any, b: any) => a + (
-        sprintId ? b['type'] === 'review' && b['task']['sprintId'] === sprintId ? b['point'] || 0 : 0 : b['type'] === 'review' ? b['point'] || 0 : 0
+        sprintId ? b['type'] === 'review' && b['sprintId'] === sprintId ? b['point'] || 0 : 0 : b['type'] === 'review' ? b['point'] || 0 : 0
     ), 0)
 }
 
 function calcTesting(points: any, sprintId: any) {
     const validPoints = points.filter((point: any) => {
-        return ['accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['type'])
+        return ['accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])
     })
     return validPoints.reduce((a: any, b: any) => a + (
-        sprintId ? b['type'] === 'testing' && b['task']['sprintId'] === sprintId ? b['point'] || 0 : 0 : b['type'] === 'testing' ? b['point'] || 0 : 0
+        sprintId ? b['type'] === 'testing' && b['sprintId'] === sprintId ? b['point'] || 0 : 0 : b['type'] === 'testing' ? b['point'] || 0 : 0
     ), 0)
 }
 

@@ -29,22 +29,7 @@ export type TaskData = {
     testing?: number;
 };
 
-// Profiles
-export type Profile = allProfilesOutput[number];
-export type ProfileProps = {
-    sprintId?: string;
-    profile: Profile
-}
-export type ProfileData = {
-    id: string;
-    username: string;
-    color: string;
-    initials: string;
-    avatar: string;
-    email: string;
-    teamId: string;
-};
-
+// Sprints
 export type Sprint = allSprintOutput[number];
 export type SprintProps = {
     sprint: Sprint
@@ -80,6 +65,7 @@ export const CreatePoint = z.object({
     sprintId: z.optional(z.string()),
 });
 
+// Folders
 export type Folder = allFolderOutput[number];
 export type FolderProps = {
     folder: Folder
@@ -88,3 +74,19 @@ export const CreateFolder = z.object({
     id: z.optional(z.string()),
     name: z.optional(z.string()),
 });
+
+// Profiles
+export type Profile = allProfilesOutput[number];
+export type ProfileProps = {
+    sprintId?: string;
+    profile: Profile;
+}
+export type ProfileData = {
+    id: string;
+    username: string;
+    color: string;
+    initials: string;
+    avatar: string;
+    email: string;
+    teamId: string;
+};

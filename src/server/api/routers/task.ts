@@ -48,8 +48,54 @@ export const taskRouter = createTRPCRouter({
         }));
         return tasks;
     }),
+    findTask: protectedProcedure.input(z.object({
+        id: z.string(),
+    })).mutation(async ({ ctx, input }) => {
+        const { id: taskId } = input;
+        const task = await ctx.prisma.task.findUnique({
+            where: {
+                id: taskId,
+            },
+            include: {
+                assignee: true,
+            },
+        });
+        if (!task) {
+            const API_TOKEN = process.env.CLICKUP_API_TOKEN;
+            const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
+            const headers = {
+                headers: {
+                    'Authorization': API_TOKEN,
+                    'Content-Type': 'application/json',
+                },
+            };
+            const getTask = await axios.get<Task>(`${BASE_URL}task/${taskId}`, headers);
+            const { id, name, description, status, assignees, tags, team_id, url, list, project, folder } : any = getTask.data;
+            const task = {
+                id,
+                name,
+                description,
+                status: status.status,
+                assigneeId: assignees[0]?.id?.toString(),
+                tags: tags.map(({ name }: any) => name).join(', '),
+                teamId: team_id,
+                url,
+                listId: list.id,
+                projectId: project.id,
+                folderId: folder?.id
+            };
+            await ctx.prisma.task.upsert({
+                where: {
+                    id: taskId,
+                },
+                update: task,
+                create: task,
+            });
+            return task;
+        }
+        return task;
+    }),
     syncClickup: protectedProcedure.mutation(async ({ ctx }) => {
-        console.log('syncClickup');
         const { tasks, folders, sprints, profiles } = await getTaskList();
         const createTasks = ctx.prisma.task.createMany({
             data: tasks,

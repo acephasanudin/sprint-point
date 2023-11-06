@@ -94,7 +94,7 @@ export function Point({ task }: TaskProps) {
                 {status}
             </td>
             <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                <Link href={'/admin/point/' + id} className="bg-blueGray-700 text-white active:bg-blueGray-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1"
+                <Link href={'/admin/point/' + id} target="_blank" className="bg-blueGray-700 text-white active:bg-blueGray-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1"
                     type="button" style={{ transition: "all .15s ease" }}
                 >
                     Detail

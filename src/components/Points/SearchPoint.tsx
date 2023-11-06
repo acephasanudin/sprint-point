@@ -28,6 +28,17 @@ export function SearchPoint() {
         },
     });
 
+    const { mutate: findTask } = api.task.findTask.useMutation({
+        onError: (context: any) => {
+            toast.error("An error occured when filtering task")
+            if (!context) return
+            trpc.task.all.setData(undefined, () => context.previousTasks)
+        },
+        onSettled: async () => {
+            await trpc.task.all.invalidate()
+        },
+    });
+
     const { mutate: mutateOptions } = api.task.setOptions.useMutation({
         onMutate: async (data: any) => {
             setId(data.id)
@@ -61,7 +72,8 @@ export function SearchPoint() {
         <div className="float-right">
             <form onSubmit={(e) => {
                 e.preventDefault()
-                syncClickup()
+                // syncClickup()
+                findTask({ id })
             }} className="flex gap-2">
                 <select value={folderId ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ml-3 mr-3"
                     onChange={(e) => {
@@ -116,6 +128,9 @@ export function SearchPoint() {
                         mutateOptions({ id: e.target.value, type, sprintId, profileId, folderId })
                     }}
                 />
+                <button type="submit" className="bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded">
+                    Syncing
+                </button>
             </form>
         </div>
     )

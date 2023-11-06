@@ -5,11 +5,17 @@ import { ProfileOptions } from "../Profiles/ProfileOptions";
 import { SprintOptions } from "../Sprints/SprintOptions";
 
 export function PicPoint({ taskId, type, last, pointObj }: PointProps) {
-    const { id, profileId, point, sprintId} = pointObj || {};
+    let { id, profileId, point, sprintId} = pointObj || {};
     const { data: profiles, isLoading: isProfileLoading, isError: isProfileError } = api.profile.all.useQuery();
     const { data: sprints, isLoading: isSprintLoading, isError: isSprintError } = api.sprint.all.useQuery();
     const trpc = api.useContext();
     const { mutate: updateMutation } = api.point.update.useMutation({
+        onMutate: async (data: any) => {
+            id = data.id ?? id
+            sprintId = data.sprintId ?? sprintId
+            profileId = data.profileId ?? profileId
+            point = data.point ?? point
+        }, 
         onSuccess: () => {
             toast.success('Point updated successfully ✅')
         },
