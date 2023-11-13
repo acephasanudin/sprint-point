@@ -24,9 +24,8 @@ export const taskRouter = createTRPCRouter({
         if (ID === '') {
             const listTasks = await ctx.prisma.task.findMany({
                 where,
-                include: { assignee: true }
             });
-            return listTasks.map(({ id, name, point, sprintId, status, assignee }) => ({ id, name, point, sprintId, status, assignee }));
+            return listTasks.map(({ id, name, point, sprintId, status }) => ({ id, name, point, sprintId, status }));
         }
         if (Type === 'task') {
             where['id'] = ID;
@@ -35,15 +34,13 @@ export const taskRouter = createTRPCRouter({
         }
         const listTasks = await ctx.prisma.task.findMany({
             where,
-            include: { assignee: true }
         });
 
-        const tasks = listTasks.map(({ id, name, point, sprintId, assignee, status }) => ({
+        const tasks = listTasks.map(({ id, name, point, sprintId, status }) => ({
             id,
             name,
             point,
             sprintId,
-            assignee,
             status
         }));
         return tasks;
@@ -55,9 +52,6 @@ export const taskRouter = createTRPCRouter({
         const task = await ctx.prisma.task.findUnique({
             where: {
                 id: taskId,
-            },
-            include: {
-                assignee: true,
             },
         });
         if (!task) {
@@ -140,7 +134,6 @@ export const taskRouter = createTRPCRouter({
                 id,
             },
             data: {
-                assigneeId,
                 sprintId,
                 point,
             },

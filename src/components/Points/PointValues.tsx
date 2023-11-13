@@ -1,15 +1,17 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Profile } from "./Profile";
+import { PicPoint } from "./PicPoint";
 import { api } from "../../utils/api";
 
-type ProfilesProps = {
+type PointsProps = {
+    taskId: string;
     color?: "light" | "dark";
 };
-export default function Profiles({ color }: ProfilesProps) {
-    const { data: profiles, isLoading, isError } = api.profile.all.useQuery();
-    if (isLoading) return <div>Loading profiles 🔄</div>
-    if (isError) return <div>Error fetching profiles ❌</div>
+export default function PointValues({ taskId, color }: PointsProps) {
+    const { data: points, isLoading, isError } = api.point.points.useQuery(taskId);
+
+    if (isLoading) return <div>Loading tasks 🔄</div>
+    if (isError) return <div>Error fetching tasks ❌</div>
     return (
         <>
             <div
@@ -23,11 +25,11 @@ export default function Profiles({ color }: ProfilesProps) {
                         <div className="relative w-full px-4 max-w-full flex-grow flex-1">
                             <h3
                                 className={
-                                    "font-semibold text-lg " +
+                                    "font-semibold text-lg float-left " +
                                     (color === "light" ? "text-blueGray-700" : "text-white")
                                 }
                             >
-                                Profiles
+                                Point List
                             </h3>
                         </div>
                     </div>
@@ -45,7 +47,7 @@ export default function Profiles({ color }: ProfilesProps) {
                                             : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
                                     }
                                 >
-                                    Name
+                                    PIC
                                 </th>
                                 <th
                                     className={
@@ -55,7 +57,7 @@ export default function Profiles({ color }: ProfilesProps) {
                                             : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
                                     }
                                 >
-                                    Email
+                                    Sprint
                                 </th>
                                 <th
                                     className={
@@ -65,7 +67,7 @@ export default function Profiles({ color }: ProfilesProps) {
                                             : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
                                     }
                                 >
-                                    Avg. Points
+                                    Point
                                 </th>
                                 <th
                                     className={
@@ -75,34 +77,18 @@ export default function Profiles({ color }: ProfilesProps) {
                                             : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
                                     }
                                 >
-                                    Avg. Completion
                                 </th>
-                                <th
-                                    className={
-                                        "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
-                                        (color === "light"
-                                            ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
-                                            : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                                    }
-                                >
-                                   Last Sprint Completion
-                                </th>
-                                <th
-                                    className={
-                                        "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
-                                        (color === "light"
-                                            ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
-                                            : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                                    }
-                                ></th>
                             </tr>
                         </thead>
                         <tbody>
-                            {profiles.length ?
-                                profiles.map((profile: any) => {
-                                    return <Profile key={profile.id} profile={profile} />
+                            {points.length ?
+                                points.map((point: any, i: number) => {
+                                    if (points.length === i + 1) {
+                                        return <PicPoint type="point" taskId={taskId} key={point.id} pointObj={point} last={true} />
+                                    }
+                                    return <PicPoint type="point" taskId={taskId} key={point.id} pointObj={point} />
                                 })
-                                : <tr>Profile not found...</tr>}
+                                : <PicPoint type="point" taskId={taskId} last={true} />}
                         </tbody>
                     </table>
                 </div>
@@ -111,10 +97,10 @@ export default function Profiles({ color }: ProfilesProps) {
     );
 }
 
-Profiles.defaultProps = {
+PointValues.defaultProps = {
     color: "light",
 };
 
-Profiles.propTypes = {
+PointValues.propTypes = {
     color: PropTypes.oneOf(["light", "dark"]),
 };

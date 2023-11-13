@@ -7,6 +7,15 @@ export const pointRouter = createTRPCRouter({
         const listPoints = await ctx.prisma.point.findMany();
         return listPoints;
     }),
+    points: protectedProcedure.input(z.string()).query(async ({ ctx, input }: any) => {
+        const listPoints = await ctx.prisma.point.findMany({
+            where: {
+                taskId: input,
+                type: 'point',
+            },
+        });
+        return listPoints.map(({ id, profileId, point, sprintId }: any) => ({ id, profileId, point, sprintId }));
+    }),
     reviews: protectedProcedure.input(z.string()).query(async ({ ctx, input }: any) => {
         const listPoints = await ctx.prisma.point.findMany({
             where: {

@@ -2,6 +2,7 @@ import React from "react";
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../../../server/auth";
+import Points from "../../../components/Points/PointValues";
 import Reviews from "../../../components/Points/Reviews";
 import Testings from "../../../components/Points/Testings";
 import Admin from "../../../layouts/Admin";
@@ -12,6 +13,9 @@ export default function PointPage({ }: InferGetServerSidePropsType<typeof getSer
     return (
         <Admin>
             <div className="flex flex-wrap mt-4">
+                <div className="w-full xl:w-6/12 mb-12 px-4">
+                    <Points taskId={router.query.slug as string} />
+                </div>
                 <div className="w-full xl:w-6/12 mb-12 px-4">
                     <Reviews taskId={router.query.slug as string} />
                 </div>

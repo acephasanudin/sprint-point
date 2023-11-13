@@ -1,11 +1,11 @@
 import type { ProfileProps } from "../../types";
 
-function calcPoint(tasks: any, sprintId: any) {
-    const validTasks = tasks.filter((task: any) => {
-        return ['review', 'review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(task['status'])
+function calcPoint(points: any, sprintId: any) {
+    const validPoints = points.filter((point: any) => {
+        return ['review', 'review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])
     })
-    return validTasks.reduce((a: any, b: any) => a + (
-        sprintId ? b['sprintId'] === sprintId ? b['point'] || 0 : 0 : b['point'] || 0
+    return validPoints.reduce((a: any, b: any) => a + (
+        sprintId ? b['type'] === 'point' && b['sprintId'] === sprintId ? b['point'] || 0 : 0 : b['type'] === 'point' ? b['point'] || 0 : 0
     ), 0)
 }
 
@@ -28,8 +28,8 @@ function calcTesting(points: any, sprintId: any) {
 }
 
 export function ProfilePoint({ sprintId, profile }: ProfileProps) {
-    const { username, color, avatar, tasks, points } = profile
-    const point = calcPoint(tasks, sprintId)
+    const { username, color, avatar, points } = profile
+    const point = calcPoint(points, sprintId)
     const review = calcReview(points, sprintId)
     const testing = calcTesting(points, sprintId)
     return (

@@ -10,12 +10,11 @@ export const profileRouter = createTRPCRouter({
                         task: true,
                     },
                 },
-                tasks: true,
             },
             orderBy: {
                 username: "asc",
             },
         });
-        return listProfiles.map(({ id, username, color, initials, avatar, email, teamId, points, tasks }) => ({ id, username, color, initials, avatar, email, teamId, points, tasks }));
+        return listProfiles.map(({ id, username, color, initials, avatar, email, teamId, points }) => ({ id, username, color, initials, avatar, email, teamId, points }));
     }),
 });

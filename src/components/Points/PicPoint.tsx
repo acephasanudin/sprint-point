@@ -23,6 +23,7 @@ export function PicPoint({ taskId, type, last, pointObj }: PointProps) {
             toast.error('Error updating point ❌')
         },
         onSettled: async () => {
+            if (type === 'point') await trpc.point.points.invalidate(taskId)
             if (type === 'testing') await trpc.point.testings.invalidate(taskId)
             if (type === 'review') await trpc.point.reviews.invalidate(taskId)
         }
@@ -35,6 +36,7 @@ export function PicPoint({ taskId, type, last, pointObj }: PointProps) {
             toast.error('Error creating point ❌')
         },
         onSettled: async () => {
+            if (type === 'point') await trpc.point.points.invalidate(taskId)
             if (type === 'testing') await trpc.point.testings.invalidate(taskId)
             if (type === 'review') await trpc.point.reviews.invalidate(taskId)
         }
@@ -47,6 +49,7 @@ export function PicPoint({ taskId, type, last, pointObj }: PointProps) {
             toast.error('Error deleting point ❌')
         },
         onSettled: async () => {
+            if (type === 'point') await trpc.point.points.invalidate(taskId)
             if (type === 'testing') await trpc.point.testings.invalidate(taskId)
             if (type === 'review') await trpc.point.reviews.invalidate(taskId)
         }
