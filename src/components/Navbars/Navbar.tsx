@@ -43,7 +43,7 @@ export function Navbar() {
                             <li key="google" className="flex items-center">
                                 <button
                                     className="bg-white text-blueGray-700 active:bg-blueGray-50 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
-                                    onClick={() => signIn('google', { callbackUrl: '/admin/dashboard' })}>
+                                    onClick={() => signIn('google', { callbackUrl: '/admin/point' })}>
                                     <img alt="..." className="w-5 mr-1 float-left" src="/img/google.svg" /> Login
                                 </button>
                             </li>

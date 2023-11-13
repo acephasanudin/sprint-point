@@ -1,5 +1,4 @@
 import { Navbar } from "../components/Navbars/Navbar";
-import { Footer } from "../components/Footers/Footer";
 
 function Home() {
     return (
@@ -214,7 +213,6 @@ function Home() {
                     </div>
                 </section>
             </main>
-            <Footer />
         </>
     );
 }

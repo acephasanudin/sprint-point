@@ -20,7 +20,7 @@ export const SearchTask = z.object({
 
 });
 export type TaskProps = {
-    task?: Task
+    task: Task
 }
 export type TaskData = {
     id: string;

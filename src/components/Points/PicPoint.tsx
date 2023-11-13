@@ -1,11 +1,12 @@
 import toast from "react-hot-toast";
 import type { PointProps } from "../../types";
 import { api } from "../../utils/api";
+import { Table } from 'flowbite-react';
 import { ProfileOptions } from "../Profiles/ProfileOptions";
 import { SprintOptions } from "../Sprints/SprintOptions";
 
 export function PicPoint({ taskId, type, last, pointObj }: PointProps) {
-    let { id, profileId, point, sprintId} = pointObj || {};
+    let { id, profileId, point, sprintId } = pointObj || {};
     const { data: profiles, isLoading: isProfileLoading, isError: isProfileError } = api.profile.all.useQuery();
     const { data: sprints, isLoading: isSprintLoading, isError: isSprintError } = api.sprint.all.useQuery();
     const trpc = api.useContext();
@@ -15,7 +16,7 @@ export function PicPoint({ taskId, type, last, pointObj }: PointProps) {
             sprintId = data.sprintId ?? sprintId
             profileId = data.profileId ?? profileId
             point = data.point ?? point
-        }, 
+        },
         onSuccess: () => {
             toast.success('Point updated successfully ✅')
         },
@@ -58,8 +59,8 @@ export function PicPoint({ taskId, type, last, pointObj }: PointProps) {
     if (isProfileError) return <option>Error fetching profile ❌</option>
 
     return (
-        <tr>
-            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+        <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                 <select value={profileId ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
                         updateMutation({ id, taskId, profileId: e.target.value, type });
@@ -72,8 +73,8 @@ export function PicPoint({ taskId, type, last, pointObj }: PointProps) {
                         })
                         : <option>Profile not found...</option>}
                 </select>
-            </td>
-            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+            </Table.Cell>
+            <Table.Cell>
                 <select value={sprintId ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
                         updateMutation({ id, sprintId: e.target.value });
@@ -86,8 +87,8 @@ export function PicPoint({ taskId, type, last, pointObj }: PointProps) {
                         })
                         : <option>Sprint not found...</option>}
                 </select>
-            </td>
-            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+            </Table.Cell>
+            <Table.Cell className="hidden sm:table-cell">
                 <select value={point ?? ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
                         updateMutation({ id, taskId, profileId: profileId || '', type, point: parseFloat(e.target.value) });
@@ -102,8 +103,8 @@ export function PicPoint({ taskId, type, last, pointObj }: PointProps) {
                     <option value="5">5</option>
                     <option value="8">8</option>
                 </select>
-            </td>
-            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+            </Table.Cell>
+            <Table.Cell className="hidden sm:table-cell">
                 <form onSubmit={(e) => {
                     e.preventDefault();
                     if (!last) {
@@ -114,12 +115,12 @@ export function PicPoint({ taskId, type, last, pointObj }: PointProps) {
                 }}>
                     {!last ? <button type="submit" className="bg-red-600 text-white active:bg-blueGray-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1" style={{ transition: "all .15s ease" }}>
                         <i className="fas fa-trash-alt"></i>
-                    </button> : <button type="submit" className="bg-blueGray-700 text-white active:bg-blueGray-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1" style={{ transition: "all .15s ease" }}>
+                    </button> : <button type="submit" className="bg-blueGray-700 active:bg-blueGray-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1" style={{ transition: "all .15s ease" }}>
                         <i className="fas fa-add"></i>
                     </button>
                     }
                 </form>
-            </td>
-        </tr >
+            </Table.Cell>
+        </Table.Row>
     )
 }

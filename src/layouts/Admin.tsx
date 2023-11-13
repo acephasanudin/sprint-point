@@ -1,25 +1,21 @@
 import React from "react";
-import AdminNavbar from "../components/Navbars/adminNavbar";
-import Sidebar from "../components/Sidebars/Sidebar";
-import HeaderStats from "../components/Headers/HeaderStats";
-import FooterAdmin from "../components/Footers/FooterAdmin";
+import Header from '../components/Headers/Header'
+import Footer from '../components/Footers/Footer'
+import BottomNavbar from "../components/Navbars/BottomNavbar";
+import { Flowbite } from "flowbite-react";
 
 type AdminProps = {
     children: React.ReactNode;
 };
 export default function Admin({ children }: AdminProps) {
-  return (
-    <>
-      <Sidebar />
-      <div className="relative md:ml-64 bg-blueGray-100">
-        <AdminNavbar />
-        {/* Header */}
-        <HeaderStats />
-        <div className="px-4 md:px-10 mx-auto w-full -m-24">
-          {children}
-          <FooterAdmin />
+    return (
+    <Flowbite>
+        <div className="flex flex-col min-h-screen">
+            <Header />
+                <main className="flex-1">{children}</main>
+            <Footer />
+            <BottomNavbar />
         </div>
-      </div>
-    </>
-  );
+    </Flowbite>
+    );
 }
