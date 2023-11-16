@@ -7,7 +7,7 @@ import {
 // import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "./db";
+import { db } from "./db";
 
 declare module "next-auth" {
     interface Session extends DefaultSession {
@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
             return true
         },
     },
-    adapter: PrismaAdapter(prisma),
+    adapter: PrismaAdapter(db),
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_ID || '',
@@ -44,3 +44,4 @@ export const getServerAuthSession = (ctx: {
 }) => {
     return getServerSession(ctx.req, ctx.res, authOptions);
 };
+

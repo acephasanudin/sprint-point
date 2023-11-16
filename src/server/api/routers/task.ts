@@ -1,60 +1,165 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { SearchTask } from "../../../types";
-import { TaskListResponse, Task } from "../../../interfaces";
-import axios, { AxiosRequestConfig } from 'axios';
-let ID = '';
-let Type = '';
-let SprintId = '';
-let ProfileId = '';
-let FolderId = '';
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import axios from 'axios';
+
+const TaskOptions = {
+    id: "",
+    title: "",
+    description: "",
+    status: "",
+    createdAt: "",
+    updatedAt: "",
+};
+
+interface Task {
+    id: string;
+    custom_id: null | string;
+    name: string;
+    text_content: string;
+    description: string;
+    status: {
+        status: string;
+        color: string;
+        type: string;
+        orderindex: number;
+    };
+    orderindex: string;
+    date_created: string;
+    date_updated: string;
+    date_closed: null | string;
+    date_done: null | string;
+    archived: boolean;
+    creator: {
+        id: number;
+        username: string;
+        color: string;
+        email: string;
+        profilePicture: string;
+    };
+    assignees: {
+        id: number;
+        username: string;
+        color: string;
+        initials: string;
+        email: string;
+        profilePicture: string;
+    }[];
+    // @ts-ignore-next-line
+    watchers: any[]; // You can replace `any` with a more specific type if needed
+    // @ts-ignore-next-line
+    checklists: any[]; // You can replace `any` with a more specific type if needed
+    tags: {
+        name: string;
+        tag_fg: string;
+        tag_bg: string;
+        creator: number;
+    }[];
+    parent: null | string;
+    priority: null | string;
+    due_date: null | string;
+    start_date: null | string;
+    points: null | number;
+    time_estimate: null | string;
+    custom_fields: {
+        id: string;
+        name: string;
+        type: string;
+        type_config: {
+            tracking: {
+                subtasks: boolean;
+                checklists: boolean;
+                assigned_comments: boolean;
+            };
+            complete_on: number;
+            subtask_rollup: boolean;
+        };
+        date_created: string;
+        hide_from_guests: boolean;
+        value: {
+            percent_complete: number;
+        };
+        required: boolean;
+    }[];
+    // @ts-ignore-next-line
+    dependencies: any[]; // You can replace `any` with a more specific type if needed
+    // @ts-ignore-next-line
+    linked_tasks: any[]; // You can replace `any` with a more specific type if needed
+    team_id: string;
+    url: string;
+    sharing: {
+        public: boolean;
+        public_share_expires_on: null | string;
+        public_fields: string[];
+        token: null | string;
+        seo_optimized: boolean;
+    };
+    permission_level: string;
+    list: {
+        id: string;
+        name: string;
+        access: boolean;
+    };
+    project: {
+        id: string;
+        name: string;
+        hidden: boolean;
+        access: boolean;
+    };
+    folder: {
+        id: string;
+        name: string;
+        hidden: boolean;
+        access: boolean;
+    };
+    space: {
+        id: string;
+    };
+}
+
+interface TaskListResponse {
+    tasks: Task[];
+}
 
 export const taskRouter = createTRPCRouter({
     all: protectedProcedure.query(async ({ ctx }) => {
-        const where: any = {};
-        if (FolderId !== '') {
-            where['folderId'] = FolderId;
-        }
-        if (SprintId !== '') {
-            where['sprintId'] = SprintId;
-        }
-        if (ProfileId !== '') {
-            where['assigneeId'] = ProfileId;
-        }
-        if (ID === '') {
-            const listTasks = await ctx.prisma.task.findMany({
-                where,
+        const id = TaskOptions.id;
+        if (id !== "") {
+            const task = await ctx.db.task.findMany({
+                include: {
+                    points: true,
+                },
+                where: {
+                    id,
+                },
             });
-            return listTasks.map(({ id, name, point, sprintId, status }) => ({ id, name, point, sprintId, status }));
+            return task;
         }
-        if (Type === 'task') {
-            where['id'] = ID;
-        } else {
-            where['listId'] = ID;
-        }
-        const listTasks = await ctx.prisma.task.findMany({
-            where,
-        });
-
-        const tasks = listTasks.map(({ id, name, point, sprintId, status }) => ({
-            id,
-            name,
-            point,
-            sprintId,
-            status
-        }));
-        return tasks;
-    }),
-    findTask: protectedProcedure.input(z.object({
-        id: z.string(),
-    })).mutation(async ({ ctx, input }) => {
-        const { id: taskId } = input;
-        const task = await ctx.prisma.task.findUnique({
-            where: {
-                id: taskId,
+        const tasks = await ctx.db.task.findMany({
+            include: {
+                points: true,
             },
         });
-        if (!task) {
+        return tasks;
+    }),
+    findOne: protectedProcedure.input(z.string()).query(async ({ ctx, input: id }) => {
+        const task = await ctx.db.task.findUnique({
+            where: {
+                id,
+            },
+        });
+        return task;
+    }),
+    findTask: protectedProcedure.input(z.string()).mutation(async ({ ctx, input: id }) => {
+        TaskOptions.id = id;
+        if (TaskOptions.id !== "") {
+            const taskById = await ctx.db.task.findMany({
+                where: {
+                    id: TaskOptions.id,
+                },
+            });
+            if (taskById.length > 0) {
+                return taskById;
+            }
             const API_TOKEN = process.env.CLICKUP_API_TOKEN;
             const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
             const headers = {
@@ -63,14 +168,14 @@ export const taskRouter = createTRPCRouter({
                     'Content-Type': 'application/json',
                 },
             };
-            const getTask = await axios.get<Task>(`${BASE_URL}task/${taskId}`, headers);
-            const { id, name, description, status, assignees, tags, team_id, url, list, project, folder } : any = getTask.data;
-            const task = {
+            const getTask = await axios.get<Task>(`${BASE_URL}task/${TaskOptions.id}`, headers);
+            if (getTask.status !== 200 || !getTask.data) return [{ name: "Please wait, searching in clickup..." }];
+            const { id, name, description, status, assignees, tags, team_id, url, list, project, folder }: any = getTask.data;
+            const taskClickup = {
                 id,
                 name,
                 description,
                 status: status.status,
-                assigneeId: assignees[0]?.id?.toString(),
                 tags: tags.map(({ name }: any) => name).join(', '),
                 teamId: team_id,
                 url,
@@ -78,161 +183,16 @@ export const taskRouter = createTRPCRouter({
                 projectId: project.id,
                 folderId: folder?.id
             };
-            await ctx.prisma.task.upsert({
+            await ctx.db.task.upsert({
                 where: {
-                    id: taskId,
+                    id: TaskOptions.id,
                 },
-                update: task,
-                create: task,
+                update: taskClickup,
+                create: taskClickup,
             });
-            return task;
-        }
-        return task;
-    }),
-    syncClickup: protectedProcedure.mutation(async ({ ctx }) => {
-        const { tasks, folders, sprints, profiles } = await getTaskList();
-        const createTasks = ctx.prisma.task.createMany({
-            data: tasks,
-            skipDuplicates: true,
-        });
-        const createFolders = ctx.prisma.folder.createMany({
-            data: folders,
-            skipDuplicates: true,
-        });
-        const createSprints = ctx.prisma.sprint.createMany({
-            data: sprints,
-            skipDuplicates: true,
-        });
-        const createProfiles = ctx.prisma.profile.createMany({
-            data: profiles,
-            skipDuplicates: true,
-        });
-        await Promise.all([createTasks, createFolders, createSprints, createProfiles]);
-        console.log('Task Length: ' + tasks.length)
-        console.log('Folder Length: ' + folders.length)
-        console.log('Sprint Length: ' + sprints.length)
-        console.log('Profile Length: ' + profiles.length)
-        return true;
-    }),
-    setOptions: protectedProcedure.input(SearchTask).mutation(async ({ ctx, input }) => {
-        ID = input?.id || '';
-        Type = input?.type || '';
-        SprintId = input?.sprintId || '';
-        ProfileId = input?.profileId || '';
-        FolderId = input?.folderId || '';
-        return true;
-    }),
-    update: protectedProcedure.input(z.object({
-        id: z.string(),
-        assigneeId: z.optional(z.string()),
-        sprintId: z.optional(z.string()),
-        point: z.optional(z.number()),
-    })).mutation(({ ctx, input }) => {
-        const { id, assigneeId, sprintId, point } = input;
-        return ctx.prisma.task.update({
-            where: {
-                id,
-            },
-            data: {
-                sprintId,
-                point,
-            },
-        });
-    }),
-    setSprintId: protectedProcedure.input(z.object({
-        sprint: z.optional(z.string()),
-        profile: z.optional(z.string()),
-        folder: z.optional(z.string()),
-    })).mutation(({ input }) => {
-        ID = '';
-        Type = '';
-        SprintId = input?.sprint || '';
-        ProfileId = input?.profile || '';
-        FolderId = input?.folder || '';
+            return taskClickup;
 
+        }
+        return true;
     }),
 });
-
-async function getTaskList() {
-    const Tasks: any = [];
-    const Folders: any = [];
-    const Sprints: any = [];
-    const Profiles: any = [];
-
-    const TEAM_ID = process.env.CLICKUP_TEAM_ID;
-    const API_TOKEN = process.env.CLICKUP_API_TOKEN;
-    const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
-    const headers = {
-        headers: {
-            'Authorization': API_TOKEN,
-            'Content-Type': 'application/json',
-        },
-    };
-    const getSpaces = await axios.get(`${BASE_URL}team/${TEAM_ID}/space`, headers);
-    const spaces = getSpaces.data.spaces;
-    const spacePromises = spaces.map(async (space: any) => {
-        const getFolders = await axios.get(`${BASE_URL}space/${space.id}/folder`, headers);
-        const folders = getFolders.data.folders;
-        const folderPromises = folders.map(async (folder: any) => {
-            if (Folders.filter((f: any) => f.id === folder.id).length === 0) {
-                Folders.push({
-                    id: folder.id,
-                    name: folder.name
-                });
-            }
-            const getLists = await axios.get(`${BASE_URL}folder/${folder.id}/list`, headers);
-            const lists = getLists.data.lists;
-            const listPromises = lists.map(async (list: any) => {
-                const getTasks = await axios.get<TaskListResponse>(`${BASE_URL}list/${list.id}/task`, headers);
-                const tasks = getTasks.data.tasks;
-                const taskPromises = tasks.map(async (task) => {
-                    const { id, name, description, status, assignees, tags, team_id, url, list, project, folder } = task;
-                    if (list.name.includes('Sprint')) {
-                        if (Sprints.filter((s: any) => s.id === list.id).length === 0) {
-                            Sprints.push({
-                                id: list.id,
-                                name: list.name
-                            });
-                        }
-                    }
-                    if (assignees.length !== 0) {
-                        assignees.forEach(async (assignee) => {
-                            if (Profiles.filter((p: any) => p.id === assignee?.id?.toString()).length === 0) {
-                                Profiles.push({
-                                    id: assignee?.id?.toString() || '',
-                                    username: assignee?.username,
-                                    color: assignee?.color,
-                                    initials: assignee?.initials,
-                                    avatar: assignee?.profilePicture,
-                                    email: assignee?.email,
-                                    teamId: team_id,
-                                });
-                            }
-                        });
-                    }
-                    if (Tasks.filter((t: any) => t.id === id).length === 0) {
-                        Tasks.push({
-                            id,
-                            name,
-                            description,
-                            status: status.status,
-                            assigneeId: assignees[0]?.id?.toString(),
-                            // sprintId: sprint?.id,
-                            tags: tags.map(({ name }) => name).join(', '),
-                            teamId: team_id,
-                            url,
-                            listId: list.id,
-                            projectId: project.id,
-                            folderId: folder?.id
-                        });
-                    }
-                });
-                await Promise.all(taskPromises);
-            });
-            await Promise.all(listPromises);
-        });
-        await Promise.all(folderPromises);
-    });
-    await Promise.all(spacePromises);
-    return { tasks: Tasks, folders: Folders, sprints: Sprints, profiles: Profiles };
-}

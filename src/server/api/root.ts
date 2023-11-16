@@ -1,21 +1,19 @@
-import { createTRPCRouter } from "./trpc";
-import { taskRouter } from "./routers/task";
-import { profileRouter } from "./routers/profile";
-import { sprintRouter } from "./routers/sprint";
-import { pointRouter } from "./routers/point";
-import { folderRouter } from "./routers/folder";
+import { taskRouter } from "~/server/api/routers/task";
+import { pointRouter } from "~/server/api/routers/point";
+import { profileRouter } from "~/server/api/routers/profile";
+import { sprintRouter } from "~/server/api/routers/sprint";
+import { createTRPCRouter } from "~/server/api/trpc";
 
 /**
  * This is the primary router for your server.
  *
- * All routers added in /api/routers should be manually added here
+ * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
   task: taskRouter,
+  point: pointRouter,
   profile: profileRouter,
   sprint: sprintRouter,
-  point: pointRouter,
-  folder: folderRouter,
 });
 
 // export type definition of API

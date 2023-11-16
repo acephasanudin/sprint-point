@@ -1,13 +1,14 @@
 import { BottomNav } from "../../components/Navigations/BottomNav";
 import { TopNav } from "../../components/Navigations/TopNav";
+import { TableTasks } from "../../components/Tasks/TableTasks";
 
-export default function Dashboard() {
+export default function Tasks() {
     return (
         <main >
             <TopNav />
-            <div className="container mx-auto">
+            <div className="container mx-auto pb-16">
                 <div className="overflow-x-auto">
-                    Dashboard
+                    <TableTasks />
                 </div>
             </div>
             <BottomNav />

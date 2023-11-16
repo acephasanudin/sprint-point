@@ -1,23 +1,17 @@
-import React from "react";
+import { BottomNav } from "../../components/Navigations/BottomNav";
+import { TopNav } from "../../components/Navigations/TopNav";
+import { TableProfiles } from "../../components/Profiles/TableProfiles";
 
-// components
-
-import Profiles from "../../components/Profiles/Profiles";
-
-// layout for page
-
-import Admin from "../../layouts/Admin";
-
-export default function ProfilesPage() {
-  return (
-    <Admin>
-      <div className="flex flex-wrap mt-4">
-        <div className="w-full mb-12 px-4">
-          <Profiles />
-        </div>
-      </div>
-    </Admin>
-  );
+export default function Profiles() {
+    return (
+        <main >
+            <TopNav />
+            <div className="container mx-auto pb-16">
+                <div className="overflow-x-auto">
+                    <TableProfiles />
+                </div>
+            </div>
+            <BottomNav />
+        </main>
+    );
 }
-
-ProfilesPage.layout = Admin;

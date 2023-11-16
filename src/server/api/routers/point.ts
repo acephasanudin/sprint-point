@@ -1,57 +1,42 @@
 import { z } from "zod";
-import { CreatePoint } from "../../../types";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+const CreatePoint = z.object({
+    id: z.optional(z.string()),
+    profileId: z.optional(z.string()),
+    taskId: z.optional(z.string()),
+    type: z.optional(z.string()),
+    point: z.optional(z.number()),
+    sprintId: z.optional(z.string()),
+});
 
 export const pointRouter = createTRPCRouter({
-    all: protectedProcedure.query(async ({ ctx }: any) => {
-        const listPoints = await ctx.prisma.point.findMany();
-        return listPoints;
-    }),
-    points: protectedProcedure.input(z.string()).query(async ({ ctx, input }: any) => {
-        const listPoints = await ctx.prisma.point.findMany({
+    all: protectedProcedure.input(z.object({ taskId: z.string(), type: z.string() })).query(async ({ ctx, input }) => {
+        const points = await ctx.db.point.findMany({
             where: {
-                taskId: input,
-                type: 'point',
+                taskId: input.taskId,
+                type: input.type,
             },
         });
-        return listPoints.map(({ id, profileId, point, sprintId }: any) => ({ id, profileId, point, sprintId }));
+        return points;
     }),
-    reviews: protectedProcedure.input(z.string()).query(async ({ ctx, input }: any) => {
-        const listPoints = await ctx.prisma.point.findMany({
-            where: {
-                taskId: input,
-                type: 'review',
-            },
-        });
-        return listPoints.map(({ id, profileId, point, sprintId }: any) => ({ id, profileId, point, sprintId }));
-    }),
-    testings: protectedProcedure.input(z.string()).query(async ({ ctx, input }: any) => {
-        const listPoints = await ctx.prisma.point.findMany({
-            where: {
-                taskId: input,
-                type: 'testing',
-            },
-        });
-        return listPoints.map(({ id, profileId, point, sprintId }: any) => ({ id, profileId, point, sprintId }));
-    }),
-    create: protectedProcedure.input(CreatePoint).mutation(async ({ ctx, input }: any) => {
-        const point = await ctx.prisma.point.create({
+    create: protectedProcedure.input(CreatePoint).mutation(async ({ ctx, input }) => {
+        const point = await ctx.db.point.create({
             data: {
                 ...input,
             },
         });
         return point;
     }),
-    update: protectedProcedure.input(CreatePoint).mutation(async ({ ctx, input }: any) => {
+    update: protectedProcedure.input(CreatePoint).mutation(async ({ ctx, input }) => {
         if (!input.id) {
-            const point = await ctx.prisma.point.create({
+            const point = await ctx.db.point.create({
                 data: {
                     ...input,
                 },
             });
             return point;
         }
-        const point = await ctx.prisma.point.update({
+        const point = await ctx.db.point.update({
             where: {
                 id: input.id,
             },
@@ -61,10 +46,10 @@ export const pointRouter = createTRPCRouter({
         });
         return point;
     }),
-    delete: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }: any) => {
-        const point = await ctx.prisma.point.delete({
+    delete: protectedProcedure.input(z.string()).mutation(async ({ ctx, input: id }) => {
+        const point = await ctx.db.point.delete({
             where: {
-                id: input,
+                id,
             },
         });
         return point;

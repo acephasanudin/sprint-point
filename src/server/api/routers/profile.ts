@@ -1,9 +1,8 @@
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const profileRouter = createTRPCRouter({
-    all: protectedProcedure.query(async ({ ctx }) => {
-        // sorted by username asc
-        const listProfiles = await ctx.prisma.profile.findMany({
+    all: protectedProcedure.query(async ({ ctx }: any) => {
+        const profile = await ctx.db.profile.findMany({
             include: {
                 points: {
                     include: {
@@ -15,6 +14,6 @@ export const profileRouter = createTRPCRouter({
                 username: "asc",
             },
         });
-        return listProfiles.map(({ id, username, color, initials, avatar, email, teamId, points }) => ({ id, username, color, initials, avatar, email, teamId, points }));
+        return profile;
     }),
 });
