@@ -1,9 +1,9 @@
 import { TableTask } from "./TableTask";
 import { api } from "../../utils/api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function TableTasks() {
-    const { data: tasks, isLoading, isError } = api.task.all.useQuery();
+    const { data: tasks, isLoading, isError } = api.task.all.useQuery({ start: 0, limit: 30 });
 
     if (isLoading) return <div className="skeleton w-full h-32"></div>
     if (isError) return <p>Error :(</p>
@@ -23,8 +23,8 @@ export function TableTasks() {
                 </tr>
             </thead>
             <tbody>
-                {tasks.length ?
-                    tasks.map((task: any) => {
+                {tasks?.length ?
+                    tasks?.map((task: any) => {
                         return <TableTask key={task.id} task={task} />
                     })
                     : <tr>

@@ -121,7 +121,7 @@ interface TaskListResponse {
 }
 
 export const taskRouter = createTRPCRouter({
-    all: protectedProcedure.query(async ({ ctx }) => {
+    all: protectedProcedure.input(z.object({ start: z.number(), limit: z.number() })).query(async ({ ctx, input }) => {
         const id = TaskOptions.id;
         if (id !== "") {
             const task = await ctx.db.task.findMany({
@@ -138,6 +138,8 @@ export const taskRouter = createTRPCRouter({
             include: {
                 points: true,
             },
+            skip: input.start,
+            take: input.limit,
         });
         return tasks;
     }),
