@@ -61,7 +61,7 @@ export function TopNav() {
                 </dialog>
             </div>
             <div className="navbar-center">
-                {pathname === "/admin/tasks" ? <input id="task-id" onChange={(e) => findTask(e.target.value)} type="text" placeholder="Clickup ID ..." className="input w-full" /> : <a className="btn btn-ghost text-xl">{title}</a>}
+                {pathname === "/admin/tasks" ? <input id="task-id" onChange={(e) => { if (e.target.value.length > 5) findTask(e.target.value) }} type="text" placeholder="Clickup ID ..." className="input w-full" /> : <a className="btn btn-ghost text-xl">{title}</a>}
             </div>
             <div className="navbar-end">
                 <div className="dropdown dropdown-end hidden [@supports(color:oklch(0_0_0))]:block">
