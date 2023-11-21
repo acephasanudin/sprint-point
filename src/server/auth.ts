@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         signIn({ account, profile }): boolean {
             if (account?.provider === "google") {
-                return profile?.email?.endsWith("@genflix.co.id") || false;
+                return (profile?.email?.endsWith("@genflix.co.id") || profile?.email?.endsWith("@sinarmasmining.com")) ?? false;
             }
             return true
         },
