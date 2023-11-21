@@ -16,7 +16,7 @@ export function TableProfile({ profile }: any) {
                 {point}/{review}/{testing}
             </td>
             <td>
-                0
+                {point + review + testing}
             </td>
         </tr >
     );
