@@ -99,21 +99,11 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                 </select>
             </td>
             <td>
-                <select value={pointValue ?? point?.point} className="select select-primary w-full max-w-xs"
+                <input type="number" value={pointValue ?? point?.point} className="input input-primary w-full max-w-xs"
                     onChange={(e) => {
                         updateMutation({ id: point?.id, point: parseFloat(e.target.value), taskId, type });
                     }}
-                >
-                    <option disabled selected>How many point?</option>
-                    <option value="0">0</option>
-                    <option value="0.25">0.25</option>
-                    <option value="0.5">0.5</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="5">5</option>
-                    <option value="8">8</option>
-                </select>
+                />
             </td>
             <td>
                 <form onSubmit={(e) => {

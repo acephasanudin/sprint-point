@@ -20,7 +20,7 @@ export function TopNav() {
     const trpc = api.useContext();
     const { mutate: findTask } = api.task.findTask.useMutation({
         onMutate: async (data: string) => {
-            const taskId = data.replace('https://app.clickup.com/t/','').replace('#','')
+            const taskId = data.replace('https://app.clickup.com/t/', '')
             await trpc.task.all.cancel()
             localStorage.setItem("taskId", taskId)
         },
@@ -62,7 +62,7 @@ export function TopNav() {
                 </dialog>
             </div>
             <div className="navbar-center">
-                {pathname === "/admin/tasks" ? <input id="task-id" onChange={(e) => { if (e.target.value.length > 5) findTask(e.target.value) }} type="text" placeholder="Clickup ID ..." className="input w-full" /> : <a className="btn btn-ghost text-xl">{title}</a>}
+                {pathname === "/admin/tasks" ? <input id="task-id" onChange={(e) => { if (e.target.value.length > 5) findTask(e.target.value.replace('https://app.clickup.com/t/', '')) }} type="text" placeholder="Clickup ID ..." className="input w-full" /> : <a className="btn btn-ghost text-xl">{title}</a>}
             </div>
             <div className="navbar-end">
                 <div className="dropdown dropdown-end hidden [@supports(color:oklch(0_0_0))]:block">
