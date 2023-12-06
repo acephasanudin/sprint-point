@@ -20,7 +20,7 @@ export function TopNav() {
     const trpc = api.useContext();
     const { mutate: findTask } = api.task.findTask.useMutation({
         onMutate: async (data: string) => {
-            const taskId = data.replace('https://app.clickup.com/t/', '')
+            const taskId = data.replace('https://app.clickup.com/t/', '').replace('#', '')
             await trpc.task.all.cancel()
             localStorage.setItem("taskId", taskId)
         },
