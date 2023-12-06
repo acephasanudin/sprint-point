@@ -1,20 +1,7 @@
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    Tooltip,
-    PointElement,
-    LineElement,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Tooltip
-);
+import { Chart as ChartJS } from "chart.js/auto";
+import { Line } from "react-chartjs-2";
+ChartJS.register();
 
 export function EstimatedActualPoint() {
     return (

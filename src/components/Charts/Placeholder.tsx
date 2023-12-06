@@ -1,20 +1,6 @@
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    Tooltip,
-    PointElement,
-    LineElement,
-} from "chart.js";
+import { Chart as ChartJS } from "chart.js/auto";
 import { Line } from "react-chartjs-2";
-
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Tooltip
-);
+ChartJS.register();
 
 export function Placeholder() {
     return (
