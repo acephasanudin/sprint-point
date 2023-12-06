@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-
 function calculate(points: any, type: string) {
     return points.filter((p: any) => p.type === type).reduce((a: any, b: any) => a + b.point, 0);
 }

@@ -1,36 +1,65 @@
 import { BottomNav } from "../../components/Navigations/BottomNav";
 import { TopNav } from "../../components/Navigations/TopNav";
-import { Placeholder } from "../../components/Charts/Placeholder";
+import { EstimatedActualPoint } from "~/components/Charts/EstimatedActualPoint";
+import { SummaryPoints } from "~/components/Charts/SummaryPoints";
+import { TotalPointTeams } from "~/components/Charts/TotalPointTeams";
+import { BurndownChart } from "~/components/Charts/BurndownChart";
+import { TotalPointUsers } from "~/components/Charts/TotalPointUsers";
 
 export default function Dashboard() {
     return (
-        <main >
+        <main>
             <TopNav />
             <div className="container mx-auto pb-16">
                 <div className="overflow-x-auto">
-                    <div className="stats shadow w-full">
-                        <div className="stat place-items-center">
-                            <div className="stat-title">Avg. Total Points</div>
-                            <div className="stat-value">4.86</div>
-                            <div className="stat-desc">+4.02% from last sprint</div>
+                    <div className="card-actions justify-end">
+                        <select className="select select-primary">
+                            <option>Current Sprint</option>
+                            <option>Sprint 21</option>
+                            <option>Sprint 22</option>
+                        </select>
+                    </div>
+                    <SummaryPoints />
+                    <div className="divider divider-primary"></div>
+                    <div className="collapse collapse-arrow">
+                        <input type="checkbox" />
+                        <div className="collapse-title text-xl font-medium">
+                            Estimated vs Total point in last 3 sprints
                         </div>
-                        <div className="stat place-items-center">
-                            <div className="stat-title">Avg. Sprint Points</div>
-                            <div className="stat-value text-secondary">3.85</div>
-                            <div className="stat-desc text-secondary">+4.54% from last sprint</div>
-                        </div>
-                        <div className="stat place-items-center">
-                            <div className="stat-title">Avg. Review Points</div>
-                            <div className="stat-value">1.5</div>
-                            <div className="stat-desc">-33.65% from last sprint</div>
-                        </div>
-                        <div className="stat place-items-center">
-                            <div className="stat-title">Avg. Testing Points</div>
-                            <div className="stat-value">3.05</div>
-                            <div className="stat-desc">+10.91% from last sprint</div>
+                        <div className="collapse-content">
+                            <EstimatedActualPoint />&nbsp;
                         </div>
                     </div>
-                    <Placeholder />
+                    <div className="divider divider-primary"></div>
+                    <div className="collapse collapse-arrow">
+                        <input type="checkbox" />
+                        <div className="collapse-title text-xl font-medium">
+                            Average total point per team in current sprint
+                        </div>
+                        <div className="collapse-content">
+                            <TotalPointTeams />&nbsp;
+                        </div>
+                    </div>
+                    <div className="divider divider-primary"></div>
+                    <div className="collapse collapse-arrow">
+                        <input type="checkbox" />
+                        <div className="collapse-title text-xl font-medium">
+                            Burndown chart
+                        </div>
+                        <div className="collapse-content">
+                            <BurndownChart />&nbsp;
+                        </div>
+                    </div>
+                    <div className="divider divider-primary"></div>
+                    <div className="collapse collapse-arrow">
+                        <input type="checkbox" />
+                        <div className="collapse-title text-xl font-medium">
+                            Total point per user
+                        </div>
+                        <div className="collapse-content">
+                            <TotalPointUsers />&nbsp;
+                        </div>
+                    </div>
                 </div>
             </div>
             <BottomNav />

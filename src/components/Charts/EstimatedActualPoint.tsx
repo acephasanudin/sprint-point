@@ -16,7 +16,7 @@ ChartJS.register(
     Tooltip
 );
 
-export function Placeholder() {
+export function EstimatedActualPoint() {
     return (
         <Line
             data={{
@@ -27,10 +27,12 @@ export function Placeholder() {
                 ],
                 datasets: [
                     {
+                        label: 'Estimated',
                         data: [130.5, 135.75, 136.75],
-                        backgroundColor: "yellow",
+                        backgroundColor: "orange",
                     },
                     {
+                        label: 'Completed',
                         data: [129.5, 132.75, 135.75],
                         backgroundColor: "green",
                     },
