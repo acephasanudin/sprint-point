@@ -89,8 +89,6 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                         updateMutation({ id: point?.id, sprintId: e.target.value, taskId, type });
                     }}
                 >
-                    <option disabled selected>Which sprint?</option>
-                    <option value=""></option>
                     {sprints?.length ?
                         sprints.map((sprint: any) => {
                             return <option key={sprint.id} value={sprint.id}>{sprint.name}</option>
@@ -99,9 +97,16 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                 </select>
             </td>
             <td>
-                <input type="number" value={pointValue ?? point?.point} className="input input-primary w-full max-w-xs"
+                <input type="text" value={pointValue ?? point?.point} className="input input-primary w-full max-w-xs"
+                    onKeyDown={(event) => {
+                        if (!/^[a-zA-Z0-9._\b]+$/.test(event.key)) {
+                            event.preventDefault();
+                        }
+                    }}
                     onChange={(e) => {
-                        updateMutation({ id: point?.id, point: parseFloat(e.target.value), taskId, type });
+                        const value = e.target.value || "0";
+                        if (value.slice(-1) === ".") return setPointValue((prev) => `${prev}.`);
+                        updateMutation({ id: point?.id, point: parseFloat(value), taskId, type });
                     }}
                 />
             </td>

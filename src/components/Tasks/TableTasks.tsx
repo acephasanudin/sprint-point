@@ -1,8 +1,15 @@
 import { TableTask } from "./TableTask";
 import { api } from "../../utils/api";
+import { useEffect, useState } from "react";
 
 export function TableTasks() {
-    const { data: tasks, isLoading, isError } = api.task.all.useQuery({ start: 0, limit: 30 });
+    const [id, setId] = useState<string>("");
+    const { data: tasks, isLoading, isError } = api.task.all.useQuery({ id, start: 0, limit: 30 });
+    useEffect(() => {
+        const id = localStorage.getItem("taskId") || "";
+        setId(id);
+        console.log("heeee?");
+    }, [id]);
 
     if (isLoading) return <div className="skeleton w-full h-32"></div>
     if (isError) return <p>Error :(</p>

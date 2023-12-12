@@ -2,15 +2,6 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import axios from 'axios';
 
-const TaskOptions = {
-    id: "",
-    title: "",
-    description: "",
-    status: "",
-    createdAt: "",
-    updatedAt: "",
-};
-
 interface Task {
     id: string;
     custom_id: null | string;
@@ -116,20 +107,16 @@ interface Task {
     };
 }
 
-interface TaskListResponse {
-    tasks: Task[];
-}
-
 export const taskRouter = createTRPCRouter({
-    all: protectedProcedure.input(z.object({ start: z.number(), limit: z.number() })).query(async ({ ctx, input }) => {
-        const id = TaskOptions.id;
-        if (id !== "") {
+    all: protectedProcedure.input(z.object({ id: z.optional(z.string()), start: z.number(), limit: z.number() })).query(async ({ ctx, input }) => {
+        console.log(input);
+        if (input.id !== "") {
             const task = await ctx.db.task.findMany({
                 include: {
                     points: true,
                 },
                 where: {
-                    id,
+                    id: input.id,
                 },
             });
             return task;
@@ -151,13 +138,10 @@ export const taskRouter = createTRPCRouter({
         });
         return task;
     }),
-    findTask: protectedProcedure.input(z.string()).mutation(async ({ ctx, input: id }) => {
-        TaskOptions.id = id;
-        if (TaskOptions.id !== "") {
+    findTask: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+        if (input !== "") {
             const taskById = await ctx.db.task.findMany({
-                where: {
-                    id: TaskOptions.id,
-                },
+                where: { id: input },
             });
             if (taskById.length > 0) {
                 return taskById;
@@ -170,7 +154,7 @@ export const taskRouter = createTRPCRouter({
                     'Content-Type': 'application/json',
                 },
             };
-            const getTask = await axios.get<Task>(`${BASE_URL}task/${TaskOptions.id}`, headers);
+            const getTask = await axios.get<Task>(`${BASE_URL}task/${input}`, headers);
             if (getTask.status !== 200 || !getTask.data) return [{ name: "Please wait, searching in clickup..." }];
             const { id, name, description, status, assignees, tags, team_id, url, list, project, folder }: any = getTask.data;
             const taskClickup = {
@@ -187,7 +171,7 @@ export const taskRouter = createTRPCRouter({
             };
             await ctx.db.task.upsert({
                 where: {
-                    id: TaskOptions.id,
+                    id: input,
                 },
                 update: taskClickup,
                 create: taskClickup,

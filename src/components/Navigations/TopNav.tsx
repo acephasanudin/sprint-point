@@ -2,8 +2,10 @@ import { useEffect } from "react";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { api } from "../../utils/api";
+import { useState } from "react";
 
 export function TopNav() {
+    const [taskId, setTaskId] = useState<string>();
     const pathname = usePathname();
     const title = pathname?.split("/")[2]?.toUpperCase();
     function setTheme(theme: string) {
@@ -12,17 +14,21 @@ export function TopNav() {
     }
     useEffect(() => {
         const theme = localStorage.getItem("theme") ?? "dark";
-        const taskId = localStorage.getItem("taskId") ?? "";
-        document.getElementById("task-id")?.setAttribute("value", taskId);
         document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("task-id")?.setAttribute("value", taskId || "");
     }, []);
+
+    useEffect(() => {
+        const id = localStorage.getItem("taskId") || "";
+        setTaskId(id);
+        localStorage.setItem("taskId", taskId || "");
+    }, [taskId])
 
     const trpc = api.useContext();
     const { mutate: findTask } = api.task.findTask.useMutation({
         onMutate: async (data: string) => {
-            const taskId = data
+            (data === "") ? localStorage.removeItem("taskId") : localStorage.setItem("taskId", data)
             await trpc.task.all.cancel()
-            localStorage.setItem("taskId", taskId)
         },
         onError: (context: any) => {
             if (!context) return
@@ -62,7 +68,9 @@ export function TopNav() {
                 </dialog>
             </div>
             <div className="navbar-center">
-                {pathname === "/admin/tasks" ? <input id="task-id" onChange={(e) => { if (e.target.value.length > 5 || e.target.value.length === 0) findTask(e.target.value.replace('https://app.clickup.com/t/', '').replace('#', '')) }} type="text" placeholder="Link / Clickup ID ..." className="input w-full" /> : <a className="btn btn-ghost text-xl">{title}</a>}
+                <input id="task-id" onChange={(e) => { if (e.target.value.length > 5 || e.target.value.length === 0) findTask(e.target.value.replace('https://app.clickup.com/t/', '').replace('#', '')) }} type="text" placeholder="Link / Clickup ID ..." className="input w-full" />
+                <input id="point" onChange={(e) => { if (e.target.value.length > 5 || e.target.value.length === 0) findPoint(e.target.value.replace('https://app.clickup.com/t/', '').replace('#', '')) }} type="text" placeholder="Link / Clickup ID ..." className="input w-full hidden" />
+                <a className="btn btn-ghost text-xl hidden">{title}</a>
             </div>
             <div className="navbar-end">
                 <div className="dropdown dropdown-end hidden [@supports(color:oklch(0_0_0))]:block">
