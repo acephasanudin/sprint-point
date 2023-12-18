@@ -1,5 +1,4 @@
 import { BottomNav } from "../../components/Navigations/BottomNav";
-import { TopNav } from "../../components/Navigations/TopNav";
 import { TableTasks } from "../../components/Tasks/TableTasks";
 
 export default function Tasks() {

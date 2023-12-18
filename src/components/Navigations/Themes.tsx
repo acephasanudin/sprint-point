@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { signOut } from "next-auth/react";
 
 export function Themes() {
     function setTheme(theme: string) {

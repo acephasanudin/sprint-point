@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { BottomNav } from "../../../components/Navigations/BottomNav";
-import { TopNav } from "../../../components/Navigations/TopNav";
 import { TablePoints } from "../../../components/Points/TablePoints";
 import { CardTask } from "../../../components/Tasks/CardTask";
 import { Themes } from "../../../components/Navigations/Themes";
