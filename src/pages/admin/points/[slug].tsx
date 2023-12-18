@@ -8,12 +8,9 @@ import { Themes } from "../../../components/Navigations/Themes";
 
 export default function Points() {
     const router = useRouter();
-    const [id, setId] = useState<string>("");
 
     const trpc = api.useContext();
     const { mutate: findTask } = api.task.findTask.useMutation({
-        onMutate: async (data: any) => {
-        },
         onSuccess: (_, id) => {
             router.push(`/admin/points/${id}`);
         },

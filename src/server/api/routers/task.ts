@@ -175,8 +175,22 @@ export const taskRouter = createTRPCRouter({
                 update: taskClickup,
                 create: taskClickup,
             });
-            return taskClickup;
 
+            if (list.name.includes('Sprint')) {
+                await ctx.db.sprint.upsert({
+                    where: {
+                        id: list.id,
+                    },
+                    update: {
+                        name: list.name
+                    },
+                    create: {
+                        id: list.id,
+                        name: list.name
+                    },
+                });
+            }
+            return taskClickup;
         }
         return true;
     }),
