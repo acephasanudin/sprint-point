@@ -1,5 +1,4 @@
 import { BottomNav } from "../../components/Navigations/BottomNav";
-import { TopNav } from "../../components/Navigations/TopNav";
 import { EstimatedActualPoint } from "~/components/Charts/EstimatedActualPoint";
 import { SummaryPoints } from "~/components/Charts/SummaryPoints";
 import { TotalPointTeams } from "~/components/Charts/TotalPointTeams";
@@ -9,7 +8,6 @@ import { TotalPointUsers } from "~/components/Charts/TotalPointUsers";
 export default function Dashboard() {
     return (
         <main>
-            <TopNav />
             <div className="container mx-auto pb-16">
                 <div className="overflow-x-auto">
                     <div className="card-actions justify-end">

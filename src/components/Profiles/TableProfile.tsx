@@ -13,7 +13,7 @@ export function TableProfile({ profile }: any) {
                 {profile.username}
             </td>
             <td>
-                {point}/{review}/{testing}
+                {point} / {review} / {testing}
             </td>
             <td>
                 {point + review + testing}

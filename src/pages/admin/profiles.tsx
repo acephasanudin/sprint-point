@@ -5,7 +5,6 @@ import { TableProfiles } from "../../components/Profiles/TableProfiles";
 export default function Profiles() {
     return (
         <main >
-            <TopNav />
             <div className="container mx-auto pb-16">
                 <div className="overflow-x-auto">
                     <TableProfiles />

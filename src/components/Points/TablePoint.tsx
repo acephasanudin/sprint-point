@@ -4,7 +4,8 @@ import { useState } from "react";
 export function TablePoint({ taskId, type, point, btnAdd }: any) {
     const [profileId, setProfileId] = useState<string | undefined>();
     const [sprintId, setSprintId] = useState<string | undefined>();
-    const [pointValue, setPointValue] = useState<number | undefined>();
+    const [pointValue, setPointValue] = useState<string | undefined>();
+    console.log(pointValue);
 
     const { data: profiles } = api.profile.all.useQuery();
     const { data: sprints } = api.sprint.all.useQuery();
@@ -55,7 +56,6 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
         onMutate: (data: any) => {
             setProfileId(data.profileId ?? profileId);
             setSprintId(data.sprintId ?? sprintId);
-            setPointValue(data.point ?? pointValue);
         },
         onSuccess: () => {
         },
@@ -97,16 +97,17 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                 </select>
             </td>
             <td>
-                <input type="text" value={pointValue ?? point?.point} className="input input-primary w-full max-w-xs"
-                    onKeyDown={(event) => {
-                        if (!/^[a-zA-Z0-9._\b]+$/.test(event.key)) {
-                            event.preventDefault();
+                <input type="text" min="0" step="0.1" lang="en-US" pattern="-?[0-9]+[\,.]*[0-9]+" value={pointValue || point.point} className="input input-primary w-full max-w-xs"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Backspace') return;
+                        if (!/^[0-9]*\.?[0-9]*$/.test(e.key)) {
+                            return e.preventDefault();
                         }
                     }}
                     onChange={(e) => {
-                        const value = e.target.value || "0";
-                        if (value.slice(-1) === ".") return setPointValue((prev) => `${prev}.`);
-                        updateMutation({ id: point?.id, point: parseFloat(value), taskId, type });
+                        if (!e.target.value) setPointValue("0");
+                        setPointValue(e.target.value);
+                        if (e.target.value.slice(-1) !== ".") updateMutation({ id: point?.id, point: parseFloat(e.target.value) || 0, taskId, type });
                     }}
                 />
             </td>

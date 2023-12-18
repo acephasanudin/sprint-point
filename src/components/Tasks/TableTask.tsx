@@ -28,7 +28,7 @@ export function TableTask({ task }: any) {
             <td>
                 <div className="tooltip tooltip-primary" data-tip="detail">
                     <Link href={`/admin/points/${task.id}`}>
-                        {point}/{review}/{testing}
+                        {point} / {review} / {testing}
                     </Link>
                 </div>
             </td>
