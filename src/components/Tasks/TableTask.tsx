@@ -20,13 +20,13 @@ export function TableTask({ task }: any) {
             </td>
             <td>
                 <div className="tooltip tooltip-primary" data-tip="detail">
-                    <Link href={`/admin/points/${task.id}`}>
-                        {task.name.substring(0, 50)}...
+                    <Link className="line-clamp-1 text-left" href={`/admin/points/${task.id}`}>
+                        {task.name}
                     </Link>
                 </div>
             </td>
             <td>
-                <div className="tooltip tooltip-primary" data-tip="detail">
+                <div className="tooltip tooltip-primary min-w-max" data-tip="detail">
                     <Link href={`/admin/points/${task.id}`}>
                         {point} / {review} / {testing}
                     </Link>
