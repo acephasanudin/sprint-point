@@ -5,7 +5,6 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
     const [profileId, setProfileId] = useState<string | undefined>();
     const [sprintId, setSprintId] = useState<string | undefined>();
     const [pointValue, setPointValue] = useState<string | undefined>();
-    console.log(pointValue);
 
     const { data: profiles } = api.profile.all.useQuery();
     const { data: sprints } = api.sprint.all.useQuery();
@@ -97,7 +96,7 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                 </select>
             </td>
             <td>
-                <input type="text" min="0" step="0.1" lang="en-US" pattern="-?[0-9]+[\,.]*[0-9]+" value={pointValue || point.point} className="input input-primary w-full max-w-xs"
+                <input type="text" min="0" step="0.1" lang="en-US" pattern="-?[0-9]+[\,.]*[0-9]+" value={pointValue || point?.point} className="input input-primary w-full max-w-xs"
                     onKeyDown={(e) => {
                         if (e.key === 'Backspace') return;
                         if (!/^[0-9]*\.?[0-9]*$/.test(e.key)) {
