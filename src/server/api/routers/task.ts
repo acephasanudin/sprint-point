@@ -109,7 +109,6 @@ interface Task {
 
 export const taskRouter = createTRPCRouter({
     all: protectedProcedure.input(z.object({ id: z.optional(z.string()), start: z.number(), limit: z.number() })).query(async ({ ctx, input }) => {
-        console.log(input);
         if (input.id !== "") {
             const task = await ctx.db.task.findMany({
                 include: {

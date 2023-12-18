@@ -8,11 +8,19 @@ export function TableTasks() {
     const router = useRouter();
     const [id, setId] = useState<string>("");
     const { data: tasks, isLoading, isError } = api.task.all.useQuery({ id, start: 0, limit: 30 });
-    function detail(id: string) {
-        router.push(`/admin/points/${id}`);
-    }
-
-    // if (isLoading) return <div className="skeleton w-full h-32"></div>
+    const trpc = api.useContext();
+    const { mutate: findTask } = api.task.findTask.useMutation({
+        onMutate: async (data: any) => {
+        },
+        onSuccess: () => {
+            router.push(`/admin/points/${id}`);
+        },
+        onError: () => {
+        },
+        onSettled: async () => {
+            await trpc.task.all.invalidate();
+        },
+    });
     if (isError) return <p>Error :(</p>
 
     return (
@@ -21,7 +29,7 @@ export function TableTasks() {
                 <div className="navbar-start">
                 </div>
                 <div className="navbar-center">
-                    <input onPaste={(e) => { detail(e.clipboardData.getData('text').replace('https://app.clickup.com/t/', '').replace('#', '')) }} id="task-id" onChange={(e) => { if (e.target.value.length > 5 || e.target.value.length === 0) setId(e.target.value.replace('https://app.clickup.com/t/', '').replace('#', '')) }} type="text" placeholder="Link / Clickup ID ..." className="input w-full" />
+                    <input onPaste={(e) => { findTask(e.clipboardData.getData('text').replace('https://app.clickup.com/t/', '').replace('#', '')) }} id="task-id" onChange={(e) => { if (e.target.value.length > 5 || e.target.value.length === 0) setId(e.target.value.replace('https://app.clickup.com/t/', '').replace('#', '')) }} type="text" placeholder="Link / Clickup ID ..." className="input w-full" />
                 </div>
                 <Themes />
             </div>
