@@ -1,7 +1,20 @@
-"use client";
-
-import Chart from 'chart.js/auto';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    Tooltip,
+    PointElement,
+    LineElement,
+} from "chart.js";
 import { Line } from "react-chartjs-2";
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Tooltip
+);
 
 export function BurndownChart() {
     return (

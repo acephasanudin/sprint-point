@@ -22,40 +22,10 @@ export default function Dashboard() {
                     <div className="collapse collapse-arrow">
                         <input type="checkbox" />
                         <div className="collapse-title text-xl font-medium">
-                            Estimated vs Total point in last 3 sprints
-                        </div>
-                        <div className="collapse-content">
-                            <EstimatedActualPoint />&nbsp;
-                        </div>
-                    </div>
-                    <div className="divider divider-primary"></div>
-                    <div className="collapse collapse-arrow">
-                        <input type="checkbox" />
-                        <div className="collapse-title text-xl font-medium">
-                            Average total point per team in current sprint
-                        </div>
-                        <div className="collapse-content">
-                            <TotalPointTeams />&nbsp;
-                        </div>
-                    </div>
-                    <div className="divider divider-primary"></div>
-                    <div className="collapse collapse-arrow">
-                        <input type="checkbox" />
-                        <div className="collapse-title text-xl font-medium">
                             Burndown chart
                         </div>
                         <div className="collapse-content">
                             <BurndownChart />&nbsp;
-                        </div>
-                    </div>
-                    <div className="divider divider-primary"></div>
-                    <div className="collapse collapse-arrow">
-                        <input type="checkbox" />
-                        <div className="collapse-title text-xl font-medium">
-                            Total point per user
-                        </div>
-                        <div className="collapse-content">
-                            <TotalPointUsers />&nbsp;
                         </div>
                     </div>
                 </div>
