@@ -1,9 +1,9 @@
 import { BottomNav } from "../../components/Navigations/BottomNav";
-import { EstimatedActualPoint } from "~/components/Charts/EstimatedActualPoint";
+// import { EstimatedActualPoint } from "~/components/Charts/EstimatedActualPoint";
 import { SummaryPoints } from "~/components/Charts/SummaryPoints";
-import { TotalPointTeams } from "~/components/Charts/TotalPointTeams";
-import { BurndownChart } from "~/components/Charts/BurndownChart";
-import { TotalPointUsers } from "~/components/Charts/TotalPointUsers";
+// import { TotalPointTeams } from "~/components/Charts/TotalPointTeams";
+import { Placeholder } from "~/components/Charts/Placeholder";
+// import { TotalPointUsers } from "~/components/Charts/TotalPointUsers";
 
 export default function Dashboard() {
     return (
@@ -25,7 +25,7 @@ export default function Dashboard() {
                             Burndown chart
                         </div>
                         <div className="collapse-content">
-                            <BurndownChart />&nbsp;
+                            <Placeholder />&nbsp;
                         </div>
                     </div>
                 </div>
