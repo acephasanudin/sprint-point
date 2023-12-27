@@ -113,6 +113,7 @@ model Sprint {
     name      String?  @unique
     tasks     Task[]
     points    Point[]
+    active    Boolean  @default(true)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

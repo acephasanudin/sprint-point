@@ -1,13 +1,24 @@
 import { api } from "../../utils/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from 'react-hot-toast';
 
 export function TablePoint({ taskId, type, point, btnAdd }: any) {
+    const [active, setActive] = useState(true);
     const [profileId, setProfileId] = useState<string | undefined>();
     const [sprintId, setSprintId] = useState<string | undefined>();
     const [pointValue, setPointValue] = useState<string | undefined>();
 
     const { data: profiles } = api.profile.all.useQuery();
     const { data: sprints } = api.sprint.all.useQuery();
+
+    useEffect(() => {
+        if (profileId) return setActive(true);
+        return setActive(false);
+    }, [profileId])
+    useEffect(() => {
+        if (point?.profileId) return setActive(true);
+        if (!sprintId) return setSprintId((prev) => sprints ? sprints[0].id : undefined)
+    }, [])
 
     const trpc = api.useContext();
 
@@ -42,7 +53,22 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                 return prev?.filter((p) => p.id !== point?.id)
             })
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+            console.log(data);
+            toast(
+                (t) => (
+                    <span>
+                        Deleted! &nbsp;
+                        <button onClick={() => {
+                            createMutation(data);
+                            toast.dismiss(t.id)
+                        }}>Undo?</button>
+                    </span>
+                ),
+                {
+                    icon: '🔥',
+                }
+            );
         },
         onError: () => {
         },
@@ -70,7 +96,8 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
             <td>
                 <select value={profileId ?? point?.profileId} className="select select-primary w-full max-w-xs"
                     onChange={(e) => {
-                        updateMutation({ id: point?.id, profileId: e.target.value, taskId, type });
+                        if (!sprintId) setSprintId(sprints?.[0]?.id);
+                        updateMutation({ id: point?.id, profileId: e.target.value, taskId, type, sprintId });
                     }}
                 >
                     <option disabled selected>Who is the PIC?</option>
@@ -83,7 +110,7 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                 </select>
             </td>
             <td>
-                <select value={sprintId ?? point?.sprintId} className="select select-primary w-full max-w-xs"
+                <select disabled={!active} value={sprintId ?? point?.sprintId} className="select select-primary w-full max-w-xs"
                     onChange={(e) => {
                         updateMutation({ id: point?.id, sprintId: e.target.value, taskId, type });
                     }}
@@ -96,14 +123,10 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                 </select>
             </td>
             <td>
-                <input type="text" min="0" step="0.1" lang="en-US" pattern="-?[0-9]+[\,.]*[0-9]+" value={pointValue || point?.point} className="input input-primary w-full max-w-xs"
-                    onKeyDown={(e) => {
-                        if (e.key === 'Backspace') return;
-                        if (!/^[0-9]*\.?[0-9]*$/.test(e.key)) {
-                            return e.preventDefault();
-                        }
-                    }}
+                <input type="text" disabled={!active} min="0" step="0.1" lang="en-US" pattern="-?[0-9]+[\.]*[0-9]+" value={pointValue || point?.point} className="input input-primary w-full max-w-xs"
                     onChange={(e) => {
+                        e.target.value = e.target.value.replace(/[^0-9\.]/g, '');
+                        if (e.target.value.slice(-1) !== ".") e.target.value = parseFloat(e.target.value || '0').toString();
                         if (!e.target.value) setPointValue("0");
                         setPointValue(e.target.value);
                         if (e.target.value.slice(-1) !== ".") updateMutation({ id: point?.id, point: parseFloat(e.target.value) || 0, taskId, type });

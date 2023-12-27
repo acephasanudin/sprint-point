@@ -1,6 +1,7 @@
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
+import { Toaster } from "react-hot-toast";
 import Head from "next/head";
 
 import { api } from "~/utils/api";
@@ -17,6 +18,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
                 <title>iSprint</title>
                 <meta name="viewport" content="initial-scale=1.0, width=device-width" />
             </Head>
+            <Toaster position="bottom-left" />
             <Component {...pageProps} />
         </SessionProvider>
     );
