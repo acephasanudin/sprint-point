@@ -17,7 +17,7 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
     }, [profileId])
     useEffect(() => {
         if (point?.profileId) return setActive(true);
-        if (!sprintId) return setSprintId((prev) => sprints ? sprints[0].id : undefined)
+        if (!sprintId) return setSprintId(() => sprints ? sprints?.[0]?.id : undefined)
     }, [])
 
     const trpc = api.useContext();
@@ -54,13 +54,20 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
             })
         },
         onSuccess: (data) => {
-            console.log(data);
             toast(
                 (t) => (
                     <span>
                         Deleted! &nbsp;
                         <button onClick={() => {
-                            createMutation(data);
+                            const pointTask = {
+                                id: data?.id,
+                                profileId: data?.profileId!,
+                                taskId: data?.taskId!,
+                                type: data?.type!,
+                                point: data?.point!,
+                                sprintId: data?.sprintId!
+                            }
+                            createMutation(pointTask);
                             toast.dismiss(t.id)
                         }}>Undo?</button>
                     </span>
