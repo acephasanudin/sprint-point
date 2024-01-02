@@ -8,7 +8,7 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
     const [sprintId, setSprintId] = useState<string | undefined>();
     const [pointValue, setPointValue] = useState<string | undefined>();
 
-    const { data: profiles } = api.profile.all.useQuery();
+    const { data: profiles } = api.profile.all.useQuery({});
     const { data: sprints } = api.sprint.all.useQuery();
 
     useEffect(() => {

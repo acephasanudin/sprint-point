@@ -108,7 +108,7 @@ interface Task {
 }
 
 export const taskRouter = createTRPCRouter({
-    all: protectedProcedure.input(z.object({ id: z.optional(z.string()), start: z.number(), limit: z.number() })).query(async ({ ctx, input }) => {
+    all: protectedProcedure.input(z.object({ id: z.optional(z.string()), profileId: z.optional(z.string()), sprintId: z.optional(z.string()), teamId: z.optional(z.string()), start: z.number(), limit: z.number() })).query(async ({ ctx, input }) => {
         if (input.id !== "") {
             const task = await ctx.db.task.findMany({
                 include: {
@@ -120,9 +120,21 @@ export const taskRouter = createTRPCRouter({
             });
             return task;
         }
+        const whereProfile: { teamId?: string } = {};
+        if (input.teamId !== undefined && input.teamId !== '') whereProfile.teamId = input.teamId;
+        const wherePoint: { sprintId?: string, profileId?: string } = {};
+        if (input.sprintId !== undefined && input.sprintId !== '') wherePoint.sprintId = input.sprintId;
+
         const tasks = await ctx.db.task.findMany({
             include: {
-                points: true,
+                points: {
+                    where: wherePoint,
+                    include: {
+                        profile: {
+                            where: whereProfile
+                        }
+                    }
+                },
             },
             skip: input.start,
             take: input.limit,
