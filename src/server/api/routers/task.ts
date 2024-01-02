@@ -137,6 +137,47 @@ export const taskRouter = createTRPCRouter({
         });
         return task;
     }),
+    syncTaskBySprint: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+        if (input !== "") {
+            console.log("*** LOG: Test sync taskBySprint");
+            const tasks = await ctx.db.task.findMany({
+                where: { sprintId: input }
+            });
+            if (tasks.length === 0) return false;
+            const API_TOKEN = process.env.CLICKUP_API_TOKEN;
+            const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
+            const headers = {
+                headers: {
+                    'Authorization': API_TOKEN,
+                    'Content-Type': 'application/json',
+                },
+            };
+            for (let i = 0; i < tasks.length; i++) {
+                const task = await axios.get<Task>(`${BASE_URL}task/${input}`, headers);
+                if (task.status !== 200 || !task.data) continue;
+                const { id, name, description, status, tags, team_id, url, list, project, folder }: any = task.data;
+                const taskClickup = {
+                    id,
+                    name,
+                    description,
+                    status: status.status,
+                    tags: tags.map(({ name }: any) => name).join(', '),
+                    teamId: team_id,
+                    url,
+                    listId: list.id,
+                    projectId: project.id,
+                    folderId: folder?.id
+                };
+                await ctx.db.task.upsert({
+                    where: {
+                        id,
+                    },
+                    update: taskClickup,
+                    create: taskClickup,
+                });
+            }
+        }
+    }),
     findTask: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
         if (input !== "") {
             const taskById = await ctx.db.task.findMany({
@@ -155,7 +196,7 @@ export const taskRouter = createTRPCRouter({
             };
             const getTask = await axios.get<Task>(`${BASE_URL}task/${input}`, headers);
             if (getTask.status !== 200 || !getTask.data) return [{ name: "Please wait, searching in clickup..." }];
-            const { id, name, description, status, assignees, tags, team_id, url, list, project, folder }: any = getTask.data;
+            const { id, name, description, status, tags, team_id, url, list, project, folder }: any = getTask.data;
             const taskClickup = {
                 id,
                 name,
