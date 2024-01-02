@@ -1,6 +1,6 @@
 import { TableProfile } from "./TableProfile";
 import { api } from "../../utils/api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Themes } from "../Navigations/Themes";
 
 export function TableProfiles() {
@@ -8,11 +8,11 @@ export function TableProfiles() {
     const [sprintId, setSprintId] = useState<string | undefined>();
     const [teamId, setTeamId] = useState<string | undefined>();
     const { data: profiles, isLoading, isError } = api.profile.all.useQuery({ teamId, profileId, sprintId });
-    const { data: profileFilter } = api.profile.all.useQuery({});
+    const { data: profileFilter } = api.profile.all.useQuery({ teamId });
     const { data: sprints } = api.sprint.all.useQuery();
     const { data: teams } = api.team.all.useQuery();
 
-    if (isLoading) return <div className="skeleton w-full h-32"></div>
+    if (isLoading) return
     if (isError) return <p>Error :(</p>
 
     return (
