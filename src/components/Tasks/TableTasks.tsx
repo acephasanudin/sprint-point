@@ -10,7 +10,7 @@ export function TableTasks() {
     const [profileId, setProfileId] = useState<string | undefined>();
     const [sprintId, setSprintId] = useState<string | undefined>();
     const [teamId, setTeamId] = useState<string | undefined>();
-    const { data: tasks, isLoading, isError } = api.task.all.useQuery({ id, profileId, sprintId, teamId, start: 0, limit: 30 });
+    const { data: tasks, isLoading, isError } = api.task.all.useQuery({ id, profileId, sprintId, teamId });
     const { data: profileFilter } = api.profile.all.useQuery({ teamId });
     const { data: sprints } = api.sprint.all.useQuery();
     const { data: teams } = api.team.all.useQuery();

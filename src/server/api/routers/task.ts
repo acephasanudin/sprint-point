@@ -108,7 +108,7 @@ interface Task {
 }
 
 export const taskRouter = createTRPCRouter({
-    all: protectedProcedure.input(z.object({ id: z.optional(z.string()), profileId: z.optional(z.string()), sprintId: z.optional(z.string()), teamId: z.optional(z.string()), start: z.number(), limit: z.number() })).query(async ({ ctx, input }) => {
+    all: protectedProcedure.input(z.object({ id: z.optional(z.string()), profileId: z.optional(z.string()), sprintId: z.optional(z.string()), teamId: z.optional(z.string()) })).query(async ({ ctx, input }) => {
         if (input.id !== "") {
             const task = await ctx.db.task.findMany({
                 include: {
@@ -124,7 +124,7 @@ export const taskRouter = createTRPCRouter({
         if (input.teamId !== undefined && input.teamId !== '') whereProfile.teamId = input.teamId;
         const wherePoint: { sprintId?: string, profileId?: string } = {};
         if (input.sprintId !== undefined && input.sprintId !== '') wherePoint.sprintId = input.sprintId;
-
+        if (input.profileId !== undefined && input.profileId !== '') wherePoint.profileId = input.profileId;
         const tasks = await ctx.db.task.findMany({
             include: {
                 points: {
@@ -136,10 +136,8 @@ export const taskRouter = createTRPCRouter({
                     }
                 },
             },
-            skip: input.start,
-            take: input.limit,
         });
-        return tasks;
+        return tasks.filter(task => task.points.length > 0 && task.points.every(point => point.profile !== null));
     }),
     findOne: protectedProcedure.input(z.string()).query(async ({ ctx, input: id }) => {
         const task = await ctx.db.task.findUnique({
