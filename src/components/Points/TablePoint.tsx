@@ -65,7 +65,7 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                                 taskId: data?.taskId!,
                                 type: data?.type!,
                                 point: data?.point!,
-                                sprintId: data?.sprintId!
+                                sprintId: data?.sprintId || sprintId
                             }
                             createMutation(pointTask);
                             toast.dismiss(t.id)
