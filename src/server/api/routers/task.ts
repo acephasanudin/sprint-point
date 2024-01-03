@@ -149,10 +149,7 @@ export const taskRouter = createTRPCRouter({
     }),
     syncTaskBySprint: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
         if (input !== "") {
-            console.log("*** LOG: Test sync taskBySprint");
-            const tasks = await ctx.db.task.findMany({
-                where: { sprintId: input }
-            });
+            const tasks = await ctx.db.task.findMany();
             if (tasks.length === 0) return false;
             const API_TOKEN = process.env.CLICKUP_API_TOKEN;
             const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
@@ -163,30 +160,36 @@ export const taskRouter = createTRPCRouter({
                 },
             };
             for (let i = 0; i < tasks.length; i++) {
-                const task = await axios.get<Task>(`${BASE_URL}task/${input}`, headers);
-                if (task.status !== 200 || !task.data) continue;
-                const { id, name, description, status, tags, team_id, url, list, project, folder }: any = task.data;
-                const taskClickup = {
-                    id,
-                    name,
-                    description,
-                    status: status.status,
-                    tags: tags.map(({ name }: any) => name).join(', '),
-                    teamId: team_id,
-                    url,
-                    listId: list.id,
-                    projectId: project.id,
-                    folderId: folder?.id
-                };
-                await ctx.db.task.upsert({
-                    where: {
+                try {
+                    const task = await axios.get<Task>(`${BASE_URL}task/${tasks?.[i]?.id}`, headers);
+                    if (task.status !== 200 || !task.data) continue;
+                    const { id, name, description, status, tags, team_id, url, list, project, folder }: any = task.data;
+                    const taskClickup = {
                         id,
-                    },
-                    update: taskClickup,
-                    create: taskClickup,
-                });
+                        name,
+                        description,
+                        status: status.status,
+                        tags: tags.map(({ name }: any) => name).join(', '),
+                        teamId: team_id,
+                        url,
+                        listId: list.id,
+                        projectId: project.id,
+                        folderId: folder?.id
+                    };
+                    await ctx.db.task.upsert({
+                        where: {
+                            id,
+                        },
+                        update: taskClickup,
+                        create: taskClickup,
+                    });
+                } catch (e) {
+
+                }
             }
+            return true;
         }
+        return true;
     }),
     findTask: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
         if (input !== "") {
