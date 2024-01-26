@@ -4,7 +4,7 @@ function calculate(points: any, type: string) {
 
 function calcPoint(points: any) {
     const validPoints = points.filter((point: any) => {
-        return ['review', 'review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])
+        return ['in review', 'review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])
     })
     return validPoints.reduce((a: any, b: any) => a + (
         b['type'] === 'point' ? b['point'] || 0 : 0
@@ -16,7 +16,7 @@ function calcReview(points: any) {
         return ['review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])
     })
     return validPoints.reduce((a: any, b: any) => a + (
-        b['type'] === 'review' ? b['point'] || 0 : 0
+        b['type'] === 'in review' ? b['point'] || 0 : 0
     ), 0)
 }
 
@@ -44,12 +44,22 @@ export function TableProfile({ profile }: any) {
                 {profile.username}
             </td>
             <td>
-                {point} / {review} / {testing} <br />
-                {cPoint} / {cReview} / {cTesting}
+                <div className="tooltip tooltip-primary" data-tip="Estimated">
+                    {point} / {review} / {testing}
+                </div>
+                <br />
+                <div className="tooltip tooltip-secondary" data-tip="Completed">
+                    {cPoint} / {cReview} / {cTesting}
+                </div>
             </td>
             <td>
-                {point + review + testing} <br />
-                {cPoint + cReview + cTesting}
+                <div className="tooltip tooltip-primary" data-tip="Estimated">
+                    {point + review + testing}
+                </div>
+                <br />
+                <div className="tooltip tooltip-secondary" data-tip="Completed">
+                    {cPoint + cReview + cTesting}
+                </div>
             </td>
         </tr >
     );
