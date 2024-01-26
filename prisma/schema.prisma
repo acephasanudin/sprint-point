@@ -90,6 +90,7 @@ model Point {
     point     Float?  @default(0)
     sprintId  String?
     sprint    Sprint? @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+    verified  Boolean  @default(false)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
