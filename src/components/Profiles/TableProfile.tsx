@@ -4,7 +4,9 @@ function calculate(points: any, type: string) {
 
 function calcPoint(points: any) {
     const validPoints = points.filter((point: any) => {
-        return ['in review', 'review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])
+        if (['in review', 'review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])) return true;
+        if (point.verified) return true
+        return false;
     })
     return validPoints.reduce((a: any, b: any) => a + (
         b['type'] === 'point' ? b['point'] || 0 : 0
@@ -13,16 +15,20 @@ function calcPoint(points: any) {
 
 function calcReview(points: any) {
     const validPoints = points.filter((point: any) => {
-        return ['review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])
+        if (['review done', 'waiting for testing', 'in testing', 'accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])) return true;
+        if (point.verified) return true
+        return false;
     })
     return validPoints.reduce((a: any, b: any) => a + (
-        b['type'] === 'in review' ? b['point'] || 0 : 0
+        b['type'] === 'review' ? b['point'] || 0 : 0
     ), 0)
 }
 
 function calcTesting(points: any) {
     const validPoints = points.filter((point: any) => {
-        return ['accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])
+        if (['accepted', 'ready to deploy', 'completed', 'Closed'].includes(point['task']['status'])) return true;
+        if (point.verified) return true
+        return false;
     })
     return validPoints.reduce((a: any, b: any) => a + (
         b['type'] === 'testing' ? b['point'] || 0 : 0

@@ -7,6 +7,7 @@ const CreatePoint = z.object({
     type: z.optional(z.string()),
     point: z.optional(z.number()),
     sprintId: z.optional(z.string()),
+    verified: z.optional(z.boolean()),
 });
 
 export const pointRouter = createTRPCRouter({
