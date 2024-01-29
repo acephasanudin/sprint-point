@@ -179,9 +179,6 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                     e.preventDefault();
                     const verified = point?.verified ? false : true;
                     if (active) {
-                        console.log("VERIFIED");
-                        console.log(verified);
-                        console.log("VERIFIED");
                         updateMutation({ id: point?.id, verified });
                     }
                 }}>
