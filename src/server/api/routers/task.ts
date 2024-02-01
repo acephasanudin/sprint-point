@@ -139,12 +139,41 @@ export const taskRouter = createTRPCRouter({
         });
         return tasks.filter(task => task.points.length > 0 && task.points.every(point => point.profile !== null));
     }),
-    findOne: protectedProcedure.input(z.string()).query(async ({ ctx, input: id }) => {
-        const task = await ctx.db.task.findUnique({
+    findOne: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
+        const id = input;
+        let task = await ctx.db.task.findUnique({
             where: {
                 id,
             },
         });
+        if (!task) {
+            const API_TOKEN = process.env.CLICKUP_API_TOKEN;
+            const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
+            const headers = {
+                headers: {
+                    'Authorization': API_TOKEN,
+                    'Content-Type': 'application/json',
+                },
+            };
+            const clickupTask = await axios.get<Task>(`${BASE_URL}task/${input}`, headers);
+            if (clickupTask.status !== 200 || !clickupTask.data) return false;
+            const { id, name, description, status, tags, team_id, url, list, project, folder }: any = clickupTask.data;
+            const taskClickup = {
+                id,
+                name,
+                description,
+                status: status.status,
+                tags: tags.map(({ name }: any) => name).join(', '),
+                teamId: team_id,
+                url,
+                listId: list.id,
+                projectId: project.id,
+                folderId: folder?.id
+            };
+            task = await ctx.db.task.create({
+                data: taskClickup,
+            });
+        }
         return task;
     }),
     syncTaskBySprint: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {

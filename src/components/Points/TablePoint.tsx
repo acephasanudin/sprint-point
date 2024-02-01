@@ -98,6 +98,37 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
         },
     });
 
+    const { mutate: verifyMutation } = api.point.update.useMutation({
+        onMutate: (data: any) => {
+            const msg = data?.verified ? "verified!" : "canceled to verify!";
+            toast(
+                (t) => (
+                    <span>
+                        Point is {msg} &nbsp;
+                        <button onClick={() => {
+                            const pointTask = {
+                                id: data?.id,
+                                verified: data?.verified ? false : true
+                            }
+                            updateMutation(pointTask);
+                            toast.dismiss(t.id)
+                        }}><b>Undo?</b></button>
+                    </span>
+                ),
+                {
+                    icon: '✔️',
+                }
+            );
+        },
+        onSuccess: () => {
+        },
+        onError: () => {
+        },
+        onSettled: async () => {
+            await trpc.point.all.invalidate();
+        },
+    });
+
     return (
         <tr>
             <td>
@@ -179,7 +210,7 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                     e.preventDefault();
                     const verified = point?.verified ? false : true;
                     if (active) {
-                        updateMutation({ id: point?.id, verified });
+                        verifyMutation({ id: point?.id, verified });
                     }
                 }}>
                     {active && !point?.verified ?
