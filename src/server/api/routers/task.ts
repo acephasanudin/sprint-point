@@ -156,7 +156,7 @@ export const taskRouter = createTRPCRouter({
                 },
             };
             const clickupTask = await axios.get<Task>(`${BASE_URL}task/${input}`, headers);
-            if (clickupTask.status !== 200 || !clickupTask.data) return false;
+            if (clickupTask.status !== 200 || !clickupTask.data) return task;
             const { id, name, description, status, tags, team_id, url, list, project, folder }: any = clickupTask.data;
             const taskClickup = {
                 id,
@@ -173,6 +173,7 @@ export const taskRouter = createTRPCRouter({
             task = await ctx.db.task.create({
                 data: taskClickup,
             });
+
         }
         return task;
     }),
