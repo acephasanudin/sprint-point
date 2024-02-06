@@ -98,36 +98,36 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
         },
     });
 
-    const { mutate: verifyMutation } = api.point.update.useMutation({
-        onMutate: (data: any) => {
-            const msg = data?.verified ? "verified!" : "canceled to verify!";
-            toast(
-                (t) => (
-                    <span>
-                        Point is {msg} &nbsp;
-                        <button onClick={() => {
-                            const pointTask = {
-                                id: data?.id,
-                                verified: data?.verified ? false : true
-                            }
-                            updateMutation(pointTask);
-                            toast.dismiss(t.id)
-                        }}><b>Undo?</b></button>
-                    </span>
-                ),
-                {
-                    icon: '✔️',
-                }
-            );
-        },
-        onSuccess: () => {
-        },
-        onError: () => {
-        },
-        onSettled: async () => {
-            await trpc.point.all.invalidate();
-        },
-    });
+    // const { mutate: verifyMutation } = api.point.update.useMutation({
+    //     onMutate: (data: any) => {
+    //         const msg = data?.verified ? "verified!" : "canceled to verify!";
+    //         toast(
+    //             (t) => (
+    //                 <span>
+    //                     Point is {msg} &nbsp;
+    //                     <button onClick={() => {
+    //                         const pointTask = {
+    //                             id: data?.id,
+    //                             verified: data?.verified ? false : true
+    //                         }
+    //                         updateMutation(pointTask);
+    //                         toast.dismiss(t.id)
+    //                     }}><b>Undo?</b></button>
+    //                 </span>
+    //             ),
+    //             {
+    //                 icon: '✔️',
+    //             }
+    //         );
+    //     },
+    //     onSuccess: () => {
+    //     },
+    //     onError: () => {
+    //     },
+    //     onSettled: async () => {
+    //         await trpc.point.all.invalidate();
+    //     },
+    // });
 
     return (
         <tr>
@@ -206,32 +206,35 @@ export function TablePoint({ taskId, type, point, btnAdd }: any) {
                         </button> : ''
                     }
                 </form>
-                <form className="float-right pr-1 pl-1" onSubmit={(e) => {
-                    e.preventDefault();
-                    const verified = point?.verified ? false : true;
-                    if (active) {
-                        verifyMutation({ id: point?.id, verified });
-                    }
-                }}>
-                    {active && !point?.verified ?
-                        < div className="tooltip tooltip-primary" data-tip="Verify point">
-                            <button className="btn btn-circle btn-outline btn-info">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                            </button> </div> : ""
-                    }
-                    {active && point?.verified ?
-                        <div className="tooltip tooltip-primary" data-tip="Cancel Verify">
-                            <button className="btn btn-circle btn-outline btn-info">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                            </button>
-                        </div> : ""
-                    }
-                </form>
             </td>
         </tr >
     );
 }
+
+
+// verify button
+// <form className="float-right pr-1 pl-1" onSubmit={(e) => {
+//     e.preventDefault();
+//     const verified = point?.verified ? false : true;
+//     if (active) {
+//         verifyMutation({ id: point?.id, verified });
+//     }
+// }}>
+//     {active && !point?.verified ?
+//         < div className="tooltip tooltip-primary" data-tip="Verify point">
+//             <button className="btn btn-circle btn-outline btn-info">
+//                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+//                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+//                 </svg>
+//             </button> </div> : ""
+//     }
+//     {active && point?.verified ?
+//         <div className="tooltip tooltip-primary" data-tip="Cancel Verify">
+//             <button className="btn btn-circle btn-outline btn-info">
+//                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+//                     <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+//                 </svg>
+//             </button>
+//         </div> : ""
+//     }
+// </form>

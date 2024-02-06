@@ -177,47 +177,44 @@ export const taskRouter = createTRPCRouter({
         }
         return task;
     }),
-    syncTaskBySprint: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
-        if (input !== "") {
-            const tasks = await ctx.db.task.findMany();
-            if (tasks.length === 0) return false;
-            const API_TOKEN = process.env.CLICKUP_API_TOKEN;
-            const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
-            const headers = {
-                headers: {
-                    'Authorization': API_TOKEN,
-                    'Content-Type': 'application/json',
-                },
-            };
-            for (let i = 0; i < tasks.length; i++) {
-                try {
-                    const task = await axios.get<Task>(`${BASE_URL}task/${tasks?.[i]?.id}`, headers);
-                    if (task.status !== 200 || !task.data) continue;
-                    const { id, name, description, status, tags, team_id, url, list, project, folder }: any = task.data;
-                    const taskClickup = {
+    syncTaskBySprint: protectedProcedure.query(async ({ ctx }) => {
+        const tasks = await ctx.db.task.findMany({ take: 2 });
+        if (tasks.length === 0) return false;
+        const API_TOKEN = process.env.CLICKUP_API_TOKEN;
+        const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
+        const headers = {
+            headers: {
+                'Authorization': API_TOKEN,
+                'Content-Type': 'application/json',
+            },
+        };
+        for (let i = 0; i < tasks.length; i++) {
+            try {
+                const task = await axios.get<Task>(`${BASE_URL}task/${tasks?.[i]?.id}`, headers);
+                if (task.status !== 200 || !task.data) continue;
+                const { id, name, description, status, tags, team_id, url, list, project, folder }: any = task.data;
+                const taskClickup = {
+                    id,
+                    name,
+                    description,
+                    status: status.status,
+                    tags: tags.map(({ name }: any) => name).join(', '),
+                    teamId: team_id,
+                    url,
+                    listId: list.id,
+                    projectId: project.id,
+                    folderId: folder?.id
+                };
+                await ctx.db.task.upsert({
+                    where: {
                         id,
-                        name,
-                        description,
-                        status: status.status,
-                        tags: tags.map(({ name }: any) => name).join(', '),
-                        teamId: team_id,
-                        url,
-                        listId: list.id,
-                        projectId: project.id,
-                        folderId: folder?.id
-                    };
-                    await ctx.db.task.upsert({
-                        where: {
-                            id,
-                        },
-                        update: taskClickup,
-                        create: taskClickup,
-                    });
-                } catch (e) {
+                    },
+                    update: taskClickup,
+                    create: taskClickup,
+                });
+            } catch (e) {
 
-                }
             }
-            return true;
         }
         return true;
     }),
