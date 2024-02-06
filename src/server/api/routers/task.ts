@@ -178,7 +178,7 @@ export const taskRouter = createTRPCRouter({
         return task;
     }),
     syncTaskBySprint: protectedProcedure.query(async ({ ctx }) => {
-        const tasks = await ctx.db.task.findMany({ take: 2 });
+        const tasks = await ctx.db.task.findMany();
         if (tasks.length === 0) return false;
         const API_TOKEN = process.env.CLICKUP_API_TOKEN;
         const BASE_URL = process.env.CLICKUP_BASE_URL || 'https://api.clickup.com/api/v2/';
