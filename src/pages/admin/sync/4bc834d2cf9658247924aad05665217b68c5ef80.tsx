@@ -17,12 +17,14 @@ export default function Points() {
     if (isError) return <p>Error :(</p>
 
     return (
-        <div className="md:mx-center flex items-center justify-center h-screen">
-            <div className="avatar">
-                <div className="w-80 h-80 rounded-full">
-                    <Image src={done} alt="" />
+        <main>
+            <div className="md:mx-center flex items-center justify-center h-screen">
+                <div className="avatar">
+                    <div className="w-80 h-80 rounded-full">
+                        <Image src={done} alt="" />
+                    </div>
                 </div>
             </div>
-        </div>
+        </main>
     );
 }
