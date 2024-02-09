@@ -7,7 +7,7 @@ export function TableProfiles() {
     const [profileId, setProfileId] = useState<string | undefined>();
     const [sprintId, setSprintId] = useState<string | undefined>();
     const [teamId, setTeamId] = useState<string | undefined>();
-    const { data: profiles, isLoading, isError } = api.profile.all.useQuery({ teamId, profileId, sprintId });
+    const { data: profiles, isLoading, isError } = api.profile.all.useQuery({ teamId, profileId, sprintId, status: "point" });
     const { data: profileFilter } = api.profile.all.useQuery({ teamId });
     const { data: sprints } = api.sprint.all.useQuery();
     const { data: teams } = api.team.all.useQuery();

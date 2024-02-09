@@ -112,7 +112,9 @@ export const taskRouter = createTRPCRouter({
         if (input.id !== "") {
             const task = await ctx.db.task.findMany({
                 include: {
-                    points: true,
+                    points: {
+                        where: { status: "point" }
+                    },
                 },
                 where: {
                     id: input.id,
@@ -122,7 +124,7 @@ export const taskRouter = createTRPCRouter({
         }
         const whereProfile: { teamId?: string } = {};
         if (input.teamId !== undefined && input.teamId !== '') whereProfile.teamId = input.teamId;
-        const wherePoint: { sprintId?: string, profileId?: string } = {};
+        const wherePoint: { sprintId?: string, profileId?: string, status?: string } = { status: "point" };
         if (input.sprintId !== undefined && input.sprintId !== '') wherePoint.sprintId = input.sprintId;
         if (input.profileId !== undefined && input.profileId !== '') wherePoint.profileId = input.profileId;
         const tasks = await ctx.db.task.findMany({

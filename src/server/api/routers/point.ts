@@ -11,11 +11,12 @@ const CreatePoint = z.object({
 });
 
 export const pointRouter = createTRPCRouter({
-    all: protectedProcedure.input(z.object({ taskId: z.string(), type: z.string() })).query(async ({ ctx, input }) => {
+    all: protectedProcedure.input(z.object({ taskId: z.string(), type: z.string(), status: z.optional(z.string()) })).query(async ({ ctx, input }) => {
         const points = await ctx.db.point.findMany({
             where: {
                 taskId: input.taskId,
                 type: input.type,
+                status: input.status || "point"
             },
         });
         return points;
@@ -27,6 +28,24 @@ export const pointRouter = createTRPCRouter({
             },
         });
         return point;
+    }),
+    generate: protectedProcedure.input(z.object({ sprintId: z.optional(z.string()), status: z.optional(z.string()) })).mutation(async ({ ctx, input }) => {
+        await ctx.db.point.deleteMany({
+            where: {
+                sprintId: input.sprintId,
+                status: input.status || "planning",
+            },
+        });
+        const points = await ctx.db.point.findMany({
+            where: {
+                sprintId: input.sprintId,
+                status: "point",
+            },
+        });
+        const data = points.map(({ id, status, ...obj }) => ({ status: input.status || "planning", ...obj }));
+        await ctx.db.point.createMany({ data })
+
+        return true;
     }),
     update: protectedProcedure.input(CreatePoint).mutation(async ({ ctx, input }) => {
         if (!input.id) {

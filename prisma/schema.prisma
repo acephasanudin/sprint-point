@@ -91,6 +91,7 @@ model Point {
     sprintId  String?
     sprint    Sprint? @relation(fields: [sprintId], references: [id], onDelete: Cascade)
     verified  Boolean  @default(false)
+    status    String? @default("point") // point, planning, actual
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
