@@ -61,10 +61,10 @@ function calculatePoint(profiles: any): any {
     return totalPointsMap;
 }
 
-function replaceIdsWithNames(ids: string[], sprintData: Sprint[]): string[] {
+function replaceIdsWithNames(ids: string[], sprintData: any): string[] {
     const idToNameMap: { [id: string]: string } = {};
 
-    sprintData?.forEach((sprint) => {
+    sprintData?.forEach((sprint: any) => {
         idToNameMap[sprint.id] = sprint.name;
     });
 
