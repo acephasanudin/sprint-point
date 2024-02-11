@@ -74,4 +74,17 @@ export const pointRouter = createTRPCRouter({
         });
         return point;
     }),
+    avgTotalPoint: protectedProcedure.input(z.object({ sprintId: z.string() })).query(async ({ ctx, input }) => {
+        const sprintId = input.sprintId;
+        const points = await ctx.db.point.aggregate({
+            _avg: {
+                point: true,
+            },
+            where: {
+                sprintId
+            }
+        });
+        console.log(points);
+        return points;
+    }),
 });

@@ -1,7 +1,24 @@
 import React, { useEffect } from "react";
 import { Chart } from "chart.js/auto";
 
-export function CompletedTotalPoints() {
+function calculateProfileTotal(points: any, status: string): Map<string, number> {
+    let totalPointsMap = new Map<string, number>();
+    points.forEach((point: any) => {
+        if (point.status === status) {
+            const sprintId = point.sprintId;
+
+            if (totalPointsMap.has(sprintId)) {
+                totalPointsMap.set(sprintId, totalPointsMap.get(sprintId)! + point.point);
+            } else {
+                totalPointsMap.set(sprintId, point.point);
+            }
+        }
+    });
+    return totalPointsMap;
+}
+
+export function CompletedTotalPoints(data: any) {
+    const { profiles, sprints } = data.data;
     useEffect(() => {
         const ctx = document.getElementById('completedTotalPoints') as HTMLCanvasElement;
         const completedTotalPoints = new Chart(ctx, {

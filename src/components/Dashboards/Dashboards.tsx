@@ -1,5 +1,6 @@
 import { api } from "../../utils/api";
 import { useEffect, useState } from "react";
+import { toast } from 'react-hot-toast';
 import { Themes } from "../Navigations/Themes";
 import { SummaryPoints } from "./SummaryPoints";
 import { TableSummaryPoints } from "./TableSummaryPoints";
@@ -9,16 +10,44 @@ import { CompletedTotalPoints } from "./CompletedTotalPoints";
 export function Dashboards() {
     const [sprintId, setSprintId] = useState<string>() || "";
     const [status, setStatus] = useState<string>() || "";
+    const { data: lastSprint } = api.sprint.lastSprint.useQuery();
+    const { data: profiles } = api.profile.all.useQuery({});
     const { data: sprints } = api.sprint.all.useQuery();
     const trpc = api.useContext();
+    const dataReport = {
+        profiles,
+        sprints
+    }
 
     const { mutate: generateMutation } = api.point.generate.useMutation({
         onMutate: async (data: any) => {
             await trpc.point.all.cancel()
         },
-        onSuccess: (a) => {
+        onSuccess: (_, payload) => {
+            const msg = `Report ${payload.status || "planning"} generated!`
+            toast(
+                () => (
+                    <span>
+                        {msg}
+                    </span>
+                ),
+                {
+                    icon: '🔥',
+                }
+            );
         },
-        onError: () => {
+        onError: (_, payload) => {
+            const msg = `Generate ${payload.status || "planning"} report failed!`
+            toast(
+                () => (
+                    <span>
+                        {msg}
+                    </span>
+                ),
+                {
+                    icon: '🔥',
+                }
+            );
         },
         onSettled: async () => {
             await trpc.point.all.invalidate();
@@ -100,52 +129,41 @@ export function Dashboards() {
             </div >
             <div className="container mx-auto pb-16">
                 <div className="overflow-x-auto">
-                    <SummaryPoints />
+                    <SummaryPoints profiles={profiles} />
                 </div>
             </div>
             <div className="container mx-auto pb-16">
                 <div className="overflow-x-auto">
-                    <div className="divider divider-primary">Table Summary Points</div>
-                    <TableSummaryPoints />
+                    <div className="divider divider-primary">
+                        <button className="btn btn-ghost btn-circle" onClick={() => (document.getElementById("filter-modal") as HTMLDialogElement).showModal()}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+                            </svg>
+                        </button>
+                        Table Summary Points
+                    </div>
+                    <TableSummaryPoints profiles={profiles} />
                 </div>
             </div>
             <div className="container mx-auto pb-16">
                 <div className="overflow-x-auto">
                     <div className="divider divider-primary">Velocity Total Point</div>
-                    <VelocityTotalPoints />
+                    <VelocityTotalPoints data={dataReport} />
                 </div>
             </div>
             <div className="container mx-auto pb-16">
                 <div className="overflow-x-auto">
-                    <div className="divider divider-primary">Completed Total Point</div>
-                    <CompletedTotalPoints />
+                    <div className="divider divider-primary">
+                        <button className="btn btn-ghost btn-circle" onClick={() => (document.getElementById("filter-modal") as HTMLDialogElement).showModal()}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+                            </svg>
+                        </button>
+                        Completed Total Point
+                    </div>
+                    <CompletedTotalPoints data={dataReport} />
                 </div>
             </div>
         </>
     );
 }
-
-
-
-// <div className="container mx-auto pb-16">
-//     <div className="overflow-x-auto">
-//         <div className="card-actions justify-end">
-//             <select className="select select-primary">
-//                 <option>Current Sprint</option>
-//                 <option>Sprint 21</option>
-//                 <option>Sprint 22</option>
-//             </select>
-//         </div>
-//         <SummaryPoints />
-//         <div className="divider divider-primary"></div>
-//         <div className="collapse collapse-arrow">
-//             <input type="checkbox" />
-//             <div className="collapse-title text-xl font-medium">
-//                 Burndown chart
-//             </div>
-//             <div className="collapse-content">
-//                 <Placeholder />&nbsp;
-//             </div>
-//         </div>
-//     </div>
-// </div>
