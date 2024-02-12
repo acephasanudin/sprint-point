@@ -31,7 +31,6 @@ function calculatePoint(profiles: any): any {
     };
 
     profiles?.forEach((profile: any) => {
-        // totalPointsMap.labels.push(profile.username);
         const estimated = calculateProfileTotal(profile.username, profile.points, "planning");
         const completed = calculateProfileTotal(profile.username, profile.points, "actual");
         estimated.forEach((point, username) => {
@@ -95,7 +94,7 @@ export function CompletedTotalPoints(data: any) {
         return () => {
             completedTotalPoints.destroy();
         };
-    }, []);
+    }, [sprints]);
 
     return (
         <canvas id='completedTotalPoints'></canvas>
