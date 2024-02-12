@@ -78,7 +78,6 @@ export function VelocityTotalPoints(data: any) {
     const { profiles, sprints } = data.data;
     const points = calculatePoint(profiles)
     const labels = replaceIdsWithNames(points?.labels, sprints);
-    console.log(labels);
     useEffect(() => {
         const ctx = document.getElementById('velocityTotalPoints') as HTMLCanvasElement;
         const velocityTotalPoints = new Chart(ctx, {
