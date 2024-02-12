@@ -10,6 +10,8 @@ import { CompletedTotalPoints } from "./CompletedTotalPoints";
 export function Dashboards() {
     const [sprintId, setSprintId] = useState<string>() || "";
     const [status, setStatus] = useState<string>() || "";
+    const [fSprintSummaryPoint, setfSprintSummaryPoint] = useState<string>() || "";
+    const [fCompletedTotalPoint, setfCompletedTotalPoint] = useState<string>() || "";
     const { data: lastSprint } = api.sprint.lastSprint.useQuery();
     const { data: profiles } = api.profile.all.useQuery({});
     const { data: sprints } = api.sprint.all.useQuery();
@@ -135,14 +137,39 @@ export function Dashboards() {
             <div className="container mx-auto pb-16">
                 <div className="overflow-x-auto">
                     <div className="divider divider-primary">
-                        <button className="btn btn-ghost btn-circle" onClick={() => (document.getElementById("filter-modal") as HTMLDialogElement).showModal()}>
+                        <button className="btn btn-ghost btn-circle" onClick={() => (document.getElementById("filter-summary-point") as HTMLDialogElement).showModal()}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
                             </svg>
                         </button>
+                        <dialog id="filter-summary-point" className="modal" onClose={() => (document.getElementById("filter-summary-point") as HTMLDialogElement).close()}>
+                            <div className="modal-box mx-auto">
+                                <h3 className="float-left font-bold text-lg">Filter Summary Point</h3>
+                                <div className="form-control w-full mt-2">
+                                    <label className="label">
+                                        <span className="label-text">Sprint</span>
+                                    </label>
+                                    <select value={fSprintSummaryPoint} className="select select-primary w-full"
+                                        onChange={(e) => {
+                                            setfSprintSummaryPoint(e.target.value);
+                                        }}
+                                    >
+                                        <option value="">All Sprint</option>
+                                        {sprints?.length ?
+                                            sprints.map((sprint: any) => {
+                                                return <option key={sprint.id} value={sprint.id}>{sprint.name}</option>
+                                            })
+                                            : <option>No sprint</option>}
+                                    </select>
+                                </div>
+                            </div>
+                            <form method="dialog" className="modal-backdrop">
+                                <button>close</button>
+                            </form>
+                        </dialog >
                         Table Summary Points
                     </div>
-                    <TableSummaryPoints profiles={profiles} />
+                    <TableSummaryPoints data={dataReport} filter={fSprintSummaryPoint} />
                 </div>
             </div>
             <div className="container mx-auto pb-16">
@@ -154,14 +181,39 @@ export function Dashboards() {
             <div className="container mx-auto pb-16">
                 <div className="overflow-x-auto">
                     <div className="divider divider-primary">
-                        <button className="btn btn-ghost btn-circle" onClick={() => (document.getElementById("filter-modal") as HTMLDialogElement).showModal()}>
+                        <button className="btn btn-ghost btn-circle" onClick={() => (document.getElementById("filter-completed-total-point") as HTMLDialogElement).showModal()}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
                             </svg>
                         </button>
+                        <dialog id="filter-completed-total-point" className="modal" onClose={() => (document.getElementById("filter-completed-total-point") as HTMLDialogElement).close()}>
+                            <div className="modal-box mx-auto">
+                                <h3 className="float-left font-bold text-lg">Filter Completed Total Point</h3>
+                                <div className="form-control w-full mt-2">
+                                    <label className="label">
+                                        <span className="label-text">Sprint</span>
+                                    </label>
+                                    <select value={fCompletedTotalPoint} className="select select-primary w-full"
+                                        onChange={(e) => {
+                                            setfCompletedTotalPoint(e.target.value);
+                                        }}
+                                    >
+                                        <option value="">All Sprint</option>
+                                        {sprints?.length ?
+                                            sprints.map((sprint: any) => {
+                                                return <option key={sprint.id} value={sprint.id}>{sprint.name}</option>
+                                            })
+                                            : <option>No sprint</option>}
+                                    </select>
+                                </div>
+                            </div>
+                            <form method="dialog" className="modal-backdrop">
+                                <button>close</button>
+                            </form>
+                        </dialog >
                         Completed Total Point
                     </div>
-                    <CompletedTotalPoints data={dataReport} />
+                    <CompletedTotalPoints data={dataReport} filter={fCompletedTotalPoint} />
                 </div>
             </div>
         </>

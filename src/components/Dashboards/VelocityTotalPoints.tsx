@@ -74,8 +74,8 @@ function replaceIdsWithNames(ids: string[], sprintData: any): string[] {
 }
 
 
-export function VelocityTotalPoints(data: any) {
-    const { profiles, sprints } = data.data;
+export function VelocityTotalPoints(props: any) {
+    const { profiles, sprints } = props.data;
     const points = calculatePoint(profiles)
     const labels = replaceIdsWithNames(points?.labels, sprints);
     useEffect(() => {

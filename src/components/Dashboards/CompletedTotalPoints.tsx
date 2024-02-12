@@ -64,10 +64,16 @@ function calculatePoint(profiles: any): any {
     return totalPointsMap;
 }
 
-export function CompletedTotalPoints(data: any) {
-    const { profiles, sprints } = data.data;
-    const points = calculatePoint(profiles)
-    console.log(points);
+export function CompletedTotalPoints(props: any) {
+    const { profiles } = props.data;
+    let filteredProfiles = profiles;
+    if (props.filter && props.filter !== "") {
+        filteredProfiles = profiles?.map((profile: any) => ({
+            ...profile,
+            points: profile.points.filter((point: any) => point.sprintId === props.filter),
+        }));
+    }
+    const points = calculatePoint(filteredProfiles)
     useEffect(() => {
         const ctx = document.getElementById('completedTotalPoints') as HTMLCanvasElement;
         const completedTotalPoints = new Chart(ctx, {
@@ -94,7 +100,7 @@ export function CompletedTotalPoints(data: any) {
         return () => {
             completedTotalPoints.destroy();
         };
-    }, [sprints]);
+    }, [profiles, props.filter]);
 
     return (
         <canvas id='completedTotalPoints'></canvas>

@@ -1,7 +1,14 @@
 import { TableSummaryPoint } from "./TableSummaryPoint"
 
-export function TableSummaryPoints(data: any) {
-    const { profiles } = data
+export function TableSummaryPoints(props: any) {
+    const { profiles } = props.data;
+    let filteredProfiles = profiles;
+    if (props.filter && props.filter !== "") {
+        filteredProfiles = profiles?.map((profile: any) => ({
+            ...profile,
+            points: profile.points.filter((point: any) => point.sprintId === props.filter),
+        }));
+    }
     return (
         <div className="shadow w-full">
             <div className="overflow-x-auto">
@@ -17,8 +24,8 @@ export function TableSummaryPoints(data: any) {
                         </tr>
                     </thead>
                     <tbody>
-                        {profiles?.length ?
-                            profiles.map((profile: any) => {
+                        {filteredProfiles?.length ?
+                            filteredProfiles.map((profile: any) => {
                                 return <TableSummaryPoint key={profile.id} profile={profile} />
                             })
                             : <tr>
